@@ -390,20 +390,55 @@ namespace GorgKaimon
 
         //public bool branch_result;
 
-        private List<int> id_equalse_neyron;
-        private List<int[]>id_way;
-        private List<int[]> limit_value;
-        private List<int[,]> id_element;
+        private List<string> step_name;
 
-        public int add_equalse(int equalse_id)
-        {
-            id_equalse_neyron.Add(equalse_id);
-            return id_equalse_neyron.Count - 1;
-        }
-        public void add_ways_to_index(int index, int []ways)
-        {
+        private List<int>       id_equalse_neyron;
+        private List<int>       id_way;
+        private List<int[]>     limit_value;
+        private List<int[,]>    id_element;
 
+
+
+
+
+
+        /// <summary>
+        /// ищем ID по имени шага
+        /// </summary>
+        /// <param name="_name"></param>
+        /// <returns></returns>
+        public int searchID_to_stepName(string _name)
+        {
+            for (int i = 0; i < step_name.Count; i++)
+                if (step_name[i] == _name)
+                    return i;
+            return -1;
         }
+        
+        /// <summary>
+        /// безопасное (safe) удаление по имени
+        /// </summary>
+        /// <param name="step_name">имя шага</param>
+        public void Remove(string step_name)
+        {
+            int id = 0;
+            if ((id = searchID_to_stepName(step_name)) != -1)
+                RemoveAt(id);            
+        }
+
+        /// <summary>
+        /// небезопасное (unsafe) удаление по индексу
+        /// </summary>
+        /// <param name="step_id"></param>
+        public void RemoveAt(int step_id)
+        {
+            step_name.RemoveAt(step_id);
+            id_element.RemoveAt(step_id);
+            id_equalse_neyron.RemoveAt(step_id);
+            id_way.RemoveAt(step_id);
+            limit_value.RemoveAt(step_id);
+        }
+
 
         //public List<int[,,,]> idEqualseNeyron_idWay_limitValue_idElement;
 
@@ -412,8 +447,11 @@ namespace GorgKaimon
         public Branch(string name_)
         {            
             name = name_;
-            //idEqualseNeyron_idWay_limitValue_idElement =
-            //    new List<int[,,,]>();
+            id_equalse_neyron = new List<int>();
+            id_way = new List<int>();
+            limit_value = new List<int[]>();
+            id_element = new List<int[,]>();
+            step_name = new List<string>();
         }
 
         

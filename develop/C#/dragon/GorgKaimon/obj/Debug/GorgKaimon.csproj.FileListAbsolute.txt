@@ -8,3 +8,5 @@ F:\GorgKaimon\GorgKaimon\obj\Debug\GorgKaimon.exe
 F:\GorgKaimon\GorgKaimon\obj\Debug\GorgKaimon.pdb
 F:\GorgKaimon\GorgKaimon\obj\Debug\GorgKaimon.treeFORM.resources
 F:\GorgKaimon\GorgKaimon\obj\Debug\GorgKaimon.Console.resources
+D:\GorgKaimon\GorgKaimon\obj\Debug\GorgKaimon.exe
+D:\GorgKaimon\GorgKaimon\obj\Debug\GorgKaimon.pdb
