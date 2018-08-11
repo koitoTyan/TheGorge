@@ -385,22 +385,125 @@ namespace GorgKaimon
     public class Branch
     {
         //public List<int> id_neyrons;//нейкон к которому обращаются
-
+        
         public string name;
 
         //public bool branch_result;
 
         private List<string> step_name;
 
-        private List<int>       id_equalse_neyron;
-        private List<int>       id_way;
+        //private List<int>       id_equalse_neyron;
+        private List<int[]>       id_way;
         private List<int[]>     limit_value;
         private List<int[,]>    id_element;
 
 
+        public string Start(List<Neyron_DB.object_s> buffer)
+        {
+            string arg_return = "";
 
+            int step_by = 0;
 
+            int step_id = id_way[step_by][0];
+            int id_neyron = id_way[step_by][1];
 
+            bool its_end = false;
+
+            while (true)                
+            {
+                if(id_neyron == -1 ||
+                    step_id == -1)
+                {
+                    its_end = true;
+                    break;
+                }
+
+                int[] limits = limit_value[step_id];
+                int[,] elements = id_element[step_id];
+
+                int k = 0;
+                int q = 0;
+
+                for (int i = 0; i < limits.Length; i++)
+                {
+                    k = 0;
+                    for (int e = 0; e < elements.Length / limits.Length; e++)
+                    {
+                        // + neyrons__.summ
+                    }
+                }
+            }
+
+            return arg_return;
+        }
+        
+
+        ///// <summary>
+        ///// Получаем информирующую строку
+        ///// </summary>
+        ///// <param name="step_id"></param>
+        ///// <returns></returns>
+        //public string get_information(int step_id)
+        //{
+        //    string arg_ret = "";
+        //    arg_ret += "'" + step_name[step_id] + "': #"+id_way[step_id].ToString()+" [";
+
+        //    for(int q = 0; q < limit_value[step_id].Count(); q++)
+        //    {
+        //        for(int i = 0; i < id_element[step_id].Rank; i++)
+        //        {
+        //            arg_ret += " "+i.ToString()+": {";
+        //            for(int k = 0; k < id_element[step_id].Length/id_element[step_id].Rank; k++)
+        //            {
+        //                if(k == 0)
+        //                {
+        //                    arg_ret += " " + id_element[step_id][i, k].ToString();
+        //                    continue;
+        //                }
+        //                arg_ret += ", "+id_element[step_id][i, k].ToString();
+        //            }
+        //            arg_ret += " }";
+        //        } arg_ret += "<" + limit_value[step_id][q].ToString() + ">";
+        //    }
+        //    return arg_ret;
+        //}
+
+        /// <summary>
+        /// получаем имя шага по ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public string get_stepName_to_ID(int id)
+        {
+            return step_name[id];
+        }
+
+        /// <summary>
+        /// количество шагов
+        /// </summary>
+        /// <returns></returns>
+        public int get_stepCount()
+        {
+            return step_name.Count;
+        }
+
+        /// <summary>
+        /// Добавление шага
+        /// </summary>
+        /// <param name="step_name_">Имя шага</param>
+        /// <param name="way_id_">ID следующего шага (если прошли лимиты)</param>
+        /// <param name="limits_">Лимиты (список лимитов, которые надо пройти)</param>
+        /// <param name="neyrons">Список нейронов (1 лимит - несколько нейронов)</param>
+        public void Add(string step_name_, int eql_neyronID,
+            int way_id_, int step_id,
+            int []limits_, int[,] neyrons)
+        {
+            step_name.Add(step_name_);
+            //id_equalse_neyron.Add(eql_neyronID);
+            id_way.Add(new int[] { step_id, way_id_ });
+            limit_value.Add(limits_);
+            id_element.Add(neyrons);
+        }
 
         /// <summary>
         /// ищем ID по имени шага
@@ -434,7 +537,7 @@ namespace GorgKaimon
         {
             step_name.RemoveAt(step_id);
             id_element.RemoveAt(step_id);
-            id_equalse_neyron.RemoveAt(step_id);
+            //id_equalse_neyron.RemoveAt(step_id);
             id_way.RemoveAt(step_id);
             limit_value.RemoveAt(step_id);
         }
@@ -447,11 +550,11 @@ namespace GorgKaimon
         public Branch(string name_)
         {            
             name = name_;
-            id_equalse_neyron = new List<int>();
-            id_way = new List<int>();
+            //id_equalse_neyron = new List<int>();
+            id_way = new List<int[]>();
             limit_value = new List<int[]>();
             id_element = new List<int[,]>();
-            step_name = new List<string>();
+            step_name = new List<string>();            
         }
 
         
