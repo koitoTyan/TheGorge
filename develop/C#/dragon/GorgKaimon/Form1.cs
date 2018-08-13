@@ -394,8 +394,8 @@ namespace GorgKaimon
 
         //private List<int>       id_equalse_neyron;
         private List<int[]>       id_way;
-        private List<int[]>     limit_value;
-        private List<int[,]>    id_element;
+        private List<int[]>       limit_value;
+        private List<int[,]>      id_element;
 
 
         public string Start(List<Neyron_DB.object_s> buffer)
@@ -404,17 +404,25 @@ namespace GorgKaimon
 
             int step_by = 0;
 
+            //int this_way = 1;
+
             int step_id = id_way[step_by][0];
             int id_neyron = id_way[step_by][1];
 
-            bool its_end = false;
+            Neyron_DB.object_s obj = buffer[id_neyron];
+            neyron_<int> n = obj.Neyron as neyron_<int>;
+
+            //bool its_end = false;
 
             while (true)                
             {
-                if(id_neyron == -1 ||
+                step_id = id_way[step_by][0];
+                id_neyron = id_way[step_by][1];
+
+                if (id_neyron == -1 ||
                     step_id == -1)
                 {
-                    its_end = true;
+                    //its_end = true;
                     break;
                 }
 
@@ -429,44 +437,62 @@ namespace GorgKaimon
                     k = 0;
                     for (int e = 0; e < elements.Length / limits.Length; e++)
                     {
-                        // + neyrons__.summ
+                        // + neyrons__.summ                        
+                        k += n.width[elements[i, e]];
                     }
-                }
-            }
 
+                    if (k >= limits[i])
+                        q++;
+                }
+                if (q >= limits.Length)
+                    { obj = buffer[id_neyron]; step_by++; }
+                else
+                    break;
+            }
+            arg_return += "last ways: '" + buffer[step_by].name_neyron + "'";
             return arg_return;
         }
-        
 
-        ///// <summary>
-        ///// Получаем информирующую строку
-        ///// </summary>
-        ///// <param name="step_id"></param>
-        ///// <returns></returns>
-        //public string get_information(int step_id)
-        //{
-        //    string arg_ret = "";
-        //    arg_ret += "'" + step_name[step_id] + "': #"+id_way[step_id].ToString()+" [";
+        private int get_summ(List<int> width_)
+        {
+            int summ = 0;
 
-        //    for(int q = 0; q < limit_value[step_id].Count(); q++)
-        //    {
-        //        for(int i = 0; i < id_element[step_id].Rank; i++)
-        //        {
-        //            arg_ret += " "+i.ToString()+": {";
-        //            for(int k = 0; k < id_element[step_id].Length/id_element[step_id].Rank; k++)
-        //            {
-        //                if(k == 0)
-        //                {
-        //                    arg_ret += " " + id_element[step_id][i, k].ToString();
-        //                    continue;
-        //                }
-        //                arg_ret += ", "+id_element[step_id][i, k].ToString();
-        //            }
-        //            arg_ret += " }";
-        //        } arg_ret += "<" + limit_value[step_id][q].ToString() + ">";
-        //    }
-        //    return arg_ret;
-        //}
+            for (int i = 0; i < width_.Count; i++)
+                summ += width_[i];
+
+            return summ;
+        }
+
+        /// <summary>
+        /// Получаем информирующую строку
+        /// </summary>
+        /// <param name="step_id"></param>
+        /// <returns></returns>
+        public string get_information(int step_id)
+        {
+            string arg_ret = "";
+            arg_ret += "'" + step_name[step_id] + "': #" + id_way[step_id].ToString() + " [";
+
+            for (int q = 0; q < limit_value[step_id].Count(); q++)
+            {
+                for (int i = 0; i < limit_value[step_id].Length; i++)
+                {
+                    arg_ret += " " + i.ToString() + ": {";
+                    for (int k = 0; k < id_element[step_id].Length / limit_value[step_id].Length; k++)
+                    {
+                        if (k == 0)
+                        {
+                            arg_ret += " " + id_element[step_id][i, k].ToString();
+                            continue;
+                        }
+                        arg_ret += ", " + id_element[step_id][i, k].ToString();
+                    }
+                    arg_ret += " }";
+                }
+                arg_ret += "<" + limit_value[step_id][q].ToString() + ">";
+            }
+            return arg_ret;
+        }
 
         /// <summary>
         /// получаем имя шага по ID
