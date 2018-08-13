@@ -6,7 +6,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Windows.Forms;
 
 namespace GorgKaimon
 {
@@ -190,7 +189,7 @@ namespace GorgKaimon
         string console_command;
         //bool stop_flag_read_console_command = false;
         //public static Neyron_DB variable_for_thread_starting;
-        Console cons;
+        //Console cons;
         bool position_analyzer;
         public Neyron_DB DATA_BASE;
         public int[] OK_NEYRON;// нейроны в буффере, которые проходят по лимитам
@@ -297,13 +296,13 @@ namespace GorgKaimon
             position_analyzer = true;
 
             //while (!cons.Created) ;
-            Timer time = new Timer();
+            //Timer time = new Timer();
 
 
-            cons = new Console();
-            time.Interval = 1000;            
-            time.Tick += Time_Tick;
-            time.Start();
+            //cons = new Console();
+            //time.Interval = 1000;            
+            //time.Tick += Time_Tick;
+            //time.Start();
         }
         
         /// <summary>
@@ -469,40 +468,40 @@ namespace GorgKaimon
         /// <summary>
         /// запуск формочки с консолью
         /// </summary>
-        public void read_console_thread()
-        {
-            cons = new Console();
-            cons.Show();
-        }
+        //public void read_console_thread()
+        //{
+        //    cons = new Console();
+        //    cons.Show();
+        //}
 
-        private void Time_Tick(object sender, EventArgs e)
-        {
-            Timer time_ = sender as Timer;
-            if (cons.IsDisposed == false && cons.Created == true)
-            {
-                if(cons.command_ != "" && cons.command_ != null)
-                {
-                    cons.listBox1.Items.Clear();
-                    cons.listBox1.Items.Add("Ожидайте выполнения комманды...");
-                    string[] command = cons.command_.Split('-').ToArray();
-                    command[0] += "-";
-                    string command_s = "";
-                    if (command.Length > 2)
-                    {
-                        for (int i = 1; i < command.Length; i++)
-                        {
-                            if (i < command.Length - 1)
-                                command_s += command[i] + "-";
-                            else command_s += command[i];
-                        }
-                    }
-                    else command_s = command[1];
-                    act_(command[0], command_s);
-                    cons.listBox1.Items.Add("Комманда выполнена успешно!");
-                    cons.command_ = "";                    
-                }
-            }                
-        }
+        //private void Time_Tick(object sender, EventArgs e)
+        //{
+        //    Timer time_ = sender as Timer;
+        //    if (cons.IsDisposed == false && cons.Created == true)
+        //    {
+        //        if(cons.command_ != "" && cons.command_ != null)
+        //        {
+        //            cons.listBox1.Items.Clear();
+        //            cons.listBox1.Items.Add("Ожидайте выполнения комманды...");
+        //            string[] command = cons.command_.Split('-').ToArray();
+        //            command[0] += "-";
+        //            string command_s = "";
+        //            if (command.Length > 2)
+        //            {
+        //                for (int i = 1; i < command.Length; i++)
+        //                {
+        //                    if (i < command.Length - 1)
+        //                        command_s += command[i] + "-";
+        //                    else command_s += command[i];
+        //                }
+        //            }
+        //            else command_s = command[1];
+        //            act_(command[0], command_s);
+        //            cons.listBox1.Items.Add("Комманда выполнена успешно!");
+        //            cons.command_ = "";                    
+        //        }
+        //    }                
+        //}
 
         /// <summary>
         /// удаление элементов из буфера
@@ -701,25 +700,25 @@ namespace GorgKaimon
 
                                 switch (type)
                                 {
-                                    case "console":
-                                        {
-                                            if(action == "ACTIVE")
-                                            {
-                                                if (cons.IsDisposed == false || cons.Created == true)
-                                                    ;
-                                                else
-                                                {
-                                                    cons = new Console();
-                                                    cons.Show();
-                                                }
-                                            } else if(action == "BREAK")
-                                            {
-                                                if (cons.IsDisposed || cons.Created == false)
-                                                    ;
-                                                else cons.Dispose();
-                                            }
-                                        }
-                                        break;
+                                    //case "console":
+                                    //    {
+                                    //        if(action == "ACTIVE")
+                                    //        {
+                                    //            if (cons.IsDisposed == false || cons.Created == true)
+                                    //                ;
+                                    //            else
+                                    //            {
+                                    //                cons = new Console();
+                                    //                cons.Show();
+                                    //            }
+                                    //        } else if(action == "BREAK")
+                                    //        {
+                                    //            if (cons.IsDisposed || cons.Created == false)
+                                    //                ;
+                                    //            else cons.Dispose();
+                                    //        }
+                                    //    }
+                                    //    break;
                                 }
                             }
                             #endregion
@@ -806,7 +805,7 @@ namespace GorgKaimon
             //_unsafe_code("merger(0, 1)");
             act_("remove-", "gorge"); */
             //act_("buffer-", "clear_");
-            read_console_thread();
+            //read_console_thread();
             neyrons__ = new List<Neyron_DB.object_s>();
             //neyrons__.Add(new Neyron_DB.object_s(null, 'n', 0));
             __unsafe_neyron_buffer = new Neyron_DB.object_s(new neyron_<double>(0.0), 'd', 0, null, -1);
@@ -1784,85 +1783,5 @@ namespace GorgKaimon
             return neyrn_s__double[index];
         }
     }
-
-
-    class Size_
-    {
-        public List<Control> Controls_ { get; set; }
-        public List<int[]> Controls_procent { get; set; }
-        // position x, position y, width, heihgt
-        public int W_H { get; set; }
-        public int W_W { get; set; }
-
-        public Size_(int Windows_H, int Windows_W)
-        {
-            W_H = Windows_H;
-            W_W = Windows_W;
-            Controls_ = new List<Control>();
-            Controls_procent = new List<int[]>();
-        }
-
-        public void Refresh()
-        {
-
-            double one_percent_position_x = Convert.ToDouble(W_W) / 100;
-            double one_percent_position_y = Convert.ToDouble(W_H) / 100;
-
-            for (int i = 0; i < Controls_.Count; i++)
-            {
-                Controls_[i].Location = new Point(
-                    Convert.ToInt32(Math.Round(one_percent_position_x * Controls_procent[i]
-                    [0])),
-                    Convert.ToInt32(Math.Round(one_percent_position_y * Controls_procent[i]
-                    [1])));
-                Controls_[i].Width = Convert.ToInt32(
-                    Math.Round(one_percent_position_x *
-                    Controls_procent[i][2]));
-                Controls_[i].Height = Convert.ToInt32(
-                    Math.Round(one_percent_position_y *
-                    Controls_procent[i][3]));
-            }
-        }
-
-        /*
-                1 пункт (компьютерный) = 1.333333333333 пиксель (Y)
-                2 пункт (компьютерный) = 2.666666666667 пиксель (Y)
-                3 пункт (компьютерный) = 4 пиксель (Y)
--------------------------------------------------------------------------------
-                1 пиксель (X) = 0.75 пункт (компьютерный)
-                2 пиксель (X) = 1.5 пункт (компьютерный)
-                3 пиксель (X) = 2.25 пункт (компьютерный)
-                4 пиксель (X) = 3 пункт (компьютерный)
-                5 пиксель (X) = 3.75 пункт (компьютерный)
-                6 пиксель (X) = 4.5 пункт (компьютерный)
-                7 пиксель (X) = 5.25 пункт (компьютерный)
-                8 пиксель (X) = 6 пункт (компьютерный)
-                9 пиксель (X) = 6.75 пункт (компьютерный)
-                10 пиксель (X) = 7.5 пункт (компьютерный)
-------------------------------------------------------------------------------
-
-         */
-        /*
-       public void _text_layer(int index)
-       {
-           if( Controls_[index].Height > Controls_[index].Width)
-           Controls_[index].Font = new Font(FontFamily.GenericSansSerif, Controls_[index].Height-40 * (float)0.75, FontStyle.Regular);
-           else Controls_[index].Font = new Font(FontFamily.GenericSansSerif, Controls_[index].Width-40 * (float)0.75, FontStyle.Regular);
-
-       }
-       */
-
-        public void Add(Control c, int[] procent)
-        {
-            Controls_.Add(c);
-            Controls_procent.Add(procent);
-        }
-        public void Remove_At(int index)
-        {
-            Controls_.RemoveAt(index);
-            Controls_procent.RemoveAt(index);
-        }
-    }
-
 }
 
