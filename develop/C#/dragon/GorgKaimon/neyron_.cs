@@ -447,6 +447,33 @@ namespace GorgKaimon
                 //bufferCommand_arg
                 // clear_
                 // remove_1, remove_0, remove_2, ..., remove_N
+
+
+                //fast_create- ИМЯ: КОЛВО_ВЕСОВ
+                case "fast_create-":
+                    {
+                        arg = arg.Trim();
+                        string name = arg.Split(':')[0];
+                        int w_count = Convert.ToInt32(arg.Split(':')[1]);
+                        int index = neyrons__.Count;
+                        act_("add-", name);
+                        SET_WIDTH_ALL_ZERO(w_count, index);
+                    } break;
+
+                // main_to- ИМЯ
+                // присваиваем main нейрону значения из другого нейрона
+                case "main_to-":
+                    {
+                        arg = arg.Trim();
+                        for(int i = 0; i < neyrons__.Count; i++)
+                            if(arg == neyrons__[i].name_neyron)
+                            {
+                                LEARN_NEYRON(i);
+                            }
+                    } break;
+                case "main_clear-": MAIN_NEYRON_CLEAR(); break;
+                case "branch_from_main-": break;
+
                 case "_unsafe-":
                     _unsafe_code(arg);
                     break;
