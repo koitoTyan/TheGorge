@@ -1460,7 +1460,7 @@ namespace GorgKaimon
         /// <param name="way_id_">ID следующего шага (если прошли лимиты)</param>
         /// <param name="limits_">Лимиты (список лимитов, которые надо пройти)</param>
         /// <param name="neyrons">Список нейронов (1 лимит - несколько нейронов)</param>
-        public void Add(string step_name_, int eql_neyronID,
+        public void Add(string step_name_,
             int way_id_, int step_id,
             int[] limits_, int[,] neyrons)
         {
