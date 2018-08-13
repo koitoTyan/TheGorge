@@ -194,6 +194,7 @@ namespace GorgKaimon
         public Neyron_DB DATA_BASE;
         public int[] OK_NEYRON;// нейроны в буффере, которые проходят по лимитам
         List<Neyron_DB.object_s> neyrons__;
+        public List<Neyron_DB.object_s> get_buffer() { return neyrons__; }
         private int search_index_to_buffer(string name)
         {
             for (int i = 0; i < neyrons__.Count; i++)
