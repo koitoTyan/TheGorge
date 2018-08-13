@@ -1,6 +1,7 @@
 ﻿using GorgKaimon;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -469,227 +470,7 @@ namespace GorgKaimon
             string command = arg.Split('-')[0].Trim() + "-";
             switch (command)
             {
-                case "add-":
-                    {
-                        #region CODE
-                        // add- name(ID, ID, ID, ID)
-                        string text_command = arg.Split('-')[1];
-
-                        string name = text_command.Split('(')[0].Trim();
-                        
-                        string[] ID_neyron = text_command
-                            .Split('(')[1]
-                            .Split(')')[0].Trim()
-                            .Split(',');
-                        List<int> ID_S = new List<int>();
-                        for(int i = 0; i < ID_neyron.Length; i++)
-                        {
-                            bool is_word = false;
-                            int ID = -1;
-                            for (int k = 0; k < ID_neyron[i].Length; k++)
-                                if (Char.IsDigit(ID_neyron[i][k]) == false)
-                                {
-                                    is_word = true;
-
-                                    ID = search_index_to_buffer(ID_neyron[i].Trim());
-                                }
-                            if (!is_word)
-                                ID = Convert.ToInt32(ID_neyron[i]);
-                            ID_S.Add(ID);
-                        }
-
-
-                        int branch_id = DATA_BASE.add_branch(name);
-                        for (int i = 0; i < ID_S.Count; i++)
-                        {
-                            DATA_BASE.add_to_work_branch(ID_S[i], branch_id);
-                        }
-                        #endregion
-                    }
-                    break;
-
-                case "remove-":
-                    {
-                        #region CODE
-                        string name = arg.Split('-')[1].Trim();
-                        if(name == "_")
-                        {
-                            DATA_BASE.remove_branch(-1);
-                            return "error remove";
-                        }
-                        //string name = text_command.Split('-')[].Trim();
-
-                        DATA_BASE.remove_branch(name);
-                        #endregion
-                    }
-                    break;
-                // change_value-
-                case "cnahge_value-":
-                    {
-                        // ИМЯ(ID, ID, ID): ИМЯ(либо ДРУГОЕ_ИМЯ)(ID, ID, ID)
-                        #region CODE
-                        string text_program = arg.Split('-')[1].Trim();
-
-                        string one_part = text_program.Split(':')[0];
-                        string one_name = one_part.Split('(')[0];
-
-                        string[] one_IDs = one_part
-                            .Split('(')[1].Split(')')[0]
-                            .Split(',').ToArray();
-
-
-                        string two_part = text_program.Split(':')[1];
-                        string two_name = two_part.Split(':')[0];
-
-                        string[] two_IDs = two_part
-                            .Split('(')[1].Split(')')[0]
-                            .Split(',').ToArray();
-                        int i = 0, k = 0;
-                        while(i >= one_IDs.Length && k >= two_IDs.Length)
-                        {
-                            bool is_word = false;
-                            #region проверка символов на буквы..
-                                for (int l = 0; l < one_IDs[i].Length; l++)
-                                {
-                                    if (
-                                        (Char.IsDigit(one_IDs[i][l])
-                                        || one_IDs[i][l] == '-') == false
-                                        )
-                                    { is_word = true; break; }
-                                }
-                                if(!is_word)
-                                for (int l = 0; l < two_IDs[k].Length; l++)
-                                {
-                                    if (
-                                        (Char.IsDigit(two_IDs[k][l])
-                                        || one_IDs[i][l] == '-') == false
-                                        )
-                                    { is_word = true; break; }
-                                }
-                            #endregion
-                            if (!is_word)
-                            {
-                                DATA_BASE.change_id_in_deferent_brench(
-                                    DATA_BASE.search_branchID_to_branch_name(
-                                        one_name),
-                                    DATA_BASE.search_branchID_to_branch_name(
-                                        two_name),
-                                    Convert.ToInt32(one_IDs[i]),
-                                    Convert.ToInt32(two_IDs[k]));
-                            }
-                            if (i < one_IDs.Length)
-                                i++;
-                            if (k < two_IDs.Length)
-                                k++;
-                        }
-                        #endregion
-                    }
-                    break;
-                case "add_neyron_to":
-                    {
-                        // ИМЯ(ID): ID, ID, ID
-                        #region CODE
-                        
-
-
-
-                        #endregion
-                    }
-                    break;
-                case "change_name-":
-                    {
-                        #region CODE
-                        // ИМЯ(ID, ID, ID): ИМЯ(либо ДРУГОЕ_ИМЯ)(ID, ID, ID)
-                        // ИМЯ: НОВОЕ_ИМЯ
-
-                        // если обе скобки пустые '()' , то это значит ВСЕ элементы
-                        
-                        string text_programm = arg.Split('-')[1].Trim();
-
-                        string name_ = text_programm.Split(':')[0];
-                        string new_name_ = text_programm.Split(':')[1];
-
-                        DATA_BASE.change_name_brench(new_name_, name_);
-                        #endregion
-                    }
-                    break;
-                case "clear-":
-                    {
-                        #region CODE
-                        DATA_BASE.remove_branch(-1);
-                        #endregion
-                    }
-                    break;
-
-                case "start_one-":
-                case "start_in_this_thread-":
-                case "start_in-":
-                    {
-                        //выполняем итерации по ветке
-                        
-                        string name_ = arg.Split('-')[1].Trim();
-                        int branch_id =
-                            DATA_BASE.search_branchID_to_branch_name(name_);
-
-                        //int[] IDs =
-                        //    DATA_BASE.get_IDs_from_branch(
-                        //        DATA_BASE.search_branchID_to_branch_name(
-                        //            name_));
-                        //Neyron_DB.object_s kon_logic = DATA_BASE.
-
-                        int[] kon_logics = 
-                            DATA_BASE.get_kon_logics_neyron_to_branchID(branch_id)
-                            .ToArray();
-
-                        int[][] layer_neyron =
-                            DATA_BASE.get_layer_neyron_to_branchID(branch_id)
-                            .ToArray();//массив массивов
-
-                        int[][] limits =
-                            DATA_BASE.get_limits_from_branchID(branch_id)
-                            .ToArray();
-
-                        int[][] limit_ways =
-                            DATA_BASE.get_limit_way_from_branchID(branch_id)
-                            .ToArray();
-
-                        int logic_index   = 0;
-
-
-                        int layer_index   = 0;
-                        int layer_element = 0;
-
-
-                        int limit_index   = 0;
-                        int limit_element = 0;
-
-
-                        int true_index    = 0;
-                        int true_answer   = 0;
-
-
-                        while (true)
-                        {                           
-                            
-                            Neyron_DB.object_s neyron =
-                               neyrons__[kon_logics[logic_index]];
-
-                            neyron_<int> kon_logic = neyron.Neyron as neyron_<int>;
-                            
-                            for(int i = 0; i < layer_neyron[kon_logics[logic_index]].Length; i++)
-                            {
-                                neyron_<int> other_neyron = neyrons__
-                                    [layer_neyron[kon_logics[logic_index]][i]]
-                                        .Neyron as neyron_<int>;
-                                
-                                for(int width_i = 0; width_i < kon_logic.width.Count; width_i++)
-                                {
-
-                                }
-                            }
-                        }
-                    }
-                    break;
+               
             } return arg_r;
         }
         private bool test_limit_bool(neyron_<int> n, int limit)
@@ -1651,278 +1432,820 @@ namespace GorgKaimon
             }
         }
     }
+    public struct Stek { public int ID; public char type; }
+    public class Branch
+    {
+        //public List<int> id_neyrons;//нейкон к которому обращаются
+
+        public string name;
+
+        //public bool branch_result;
+
+        private List<string> step_name;
+
+        //private List<int>       id_equalse_neyron;
+        private List<int[]> id_way;
+        private List<int[]> limit_value;
+        private List<int[,]> id_element;
+
+
+        public string Start(List<Neyron_DB.object_s> buffer)
+        {
+            string arg_return = "";
+
+            int step_by = 0;
+
+            //int this_way = 1;
+
+            int step_id = id_way[step_by][0];
+            int id_neyron = id_way[step_by][1];
+
+            Neyron_DB.object_s obj = buffer[id_neyron];
+            neyron_<int> n = obj.Neyron as neyron_<int>;
+
+            //bool its_end = false;
+
+            while (true)
+            {
+                step_id = id_way[step_by][0];
+                id_neyron = id_way[step_by][1];
+
+                if (id_neyron == -1 ||
+                    step_id == -1)
+                {
+                    //its_end = true;
+                    break;
+                }
+
+                int[] limits = limit_value[step_id];
+                int[,] elements = id_element[step_id];
+
+                int k = 0;
+                int q = 0;
+
+                for (int i = 0; i < limits.Length; i++)
+                {
+                    k = 0;
+                    for (int e = 0; e < elements.Length / limits.Length; e++)
+                    {
+                        // + neyrons__.summ                        
+                        k += n.width[elements[i, e]];
+                    }
+
+                    if (k >= limits[i])
+                        q++;
+                }
+                if (q >= limits.Length)
+                { obj = buffer[id_neyron]; step_by++; }
+                else
+                    break;
+            }
+            arg_return += "last ways: '" + buffer[step_by].name_neyron + "'";
+            return arg_return;
+        }
+
+        private int get_summ(List<int> width_)
+        {
+            int summ = 0;
+
+            for (int i = 0; i < width_.Count; i++)
+                summ += width_[i];
+
+            return summ;
+        }
+
+        /// <summary>
+        /// Получаем информирующую строку
+        /// </summary>
+        /// <param name="step_id"></param>
+        /// <returns></returns>
+        public string get_information(int step_id)
+        {
+            string arg_ret = "";
+            arg_ret += "'" + step_name[step_id] + "': #" + id_way[step_id].ToString() + " [";
+
+            for (int q = 0; q < limit_value[step_id].Count(); q++)
+            {
+                for (int i = 0; i < limit_value[step_id].Length; i++)
+                {
+                    arg_ret += " " + i.ToString() + ": {";
+                    for (int k = 0; k < id_element[step_id].Length / limit_value[step_id].Length; k++)
+                    {
+                        if (k == 0)
+                        {
+                            arg_ret += " " + id_element[step_id][i, k].ToString();
+                            continue;
+                        }
+                        arg_ret += ", " + id_element[step_id][i, k].ToString();
+                    }
+                    arg_ret += " }";
+                }
+                arg_ret += "<" + limit_value[step_id][q].ToString() + ">";
+            }
+            return arg_ret;
+        }
+
+        /// <summary>
+        /// получаем имя шага по ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public string get_stepName_to_ID(int id)
+        {
+            return step_name[id];
+        }
+
+        /// <summary>
+        /// количество шагов
+        /// </summary>
+        /// <returns></returns>
+        public int get_stepCount()
+        {
+            return step_name.Count;
+        }
+
+        /// <summary>
+        /// Добавление шага
+        /// </summary>
+        /// <param name="step_name_">Имя шага</param>
+        /// <param name="way_id_">ID следующего шага (если прошли лимиты)</param>
+        /// <param name="limits_">Лимиты (список лимитов, которые надо пройти)</param>
+        /// <param name="neyrons">Список нейронов (1 лимит - несколько нейронов)</param>
+        public void Add(string step_name_, int eql_neyronID,
+            int way_id_, int step_id,
+            int[] limits_, int[,] neyrons)
+        {
+            step_name.Add(step_name_);
+            //id_equalse_neyron.Add(eql_neyronID);
+            id_way.Add(new int[] { step_id, way_id_ });
+            limit_value.Add(limits_);
+            id_element.Add(neyrons);
+        }
+
+        /// <summary>
+        /// ищем ID по имени шага
+        /// </summary>
+        /// <param name="_name"></param>
+        /// <returns></returns>
+        public int searchID_to_stepName(string _name)
+        {
+            for (int i = 0; i < step_name.Count; i++)
+                if (step_name[i] == _name)
+                    return i;
+            return -1;
+        }
+
+        /// <summary>
+        /// безопасное (safe) удаление по имени
+        /// </summary>
+        /// <param name="step_name">имя шага</param>
+        public void Remove(string step_name)
+        {
+            int id = 0;
+            if ((id = searchID_to_stepName(step_name)) != -1)
+                RemoveAt(id);
+        }
+
+        /// <summary>
+        /// небезопасное (unsafe) удаление по индексу
+        /// </summary>
+        /// <param name="step_id"></param>
+        public void RemoveAt(int step_id)
+        {
+            step_name.RemoveAt(step_id);
+            id_element.RemoveAt(step_id);
+            //id_equalse_neyron.RemoveAt(step_id);
+            id_way.RemoveAt(step_id);
+            limit_value.RemoveAt(step_id);
+        }
+
+
+        //public List<int[,,,]> idEqualseNeyron_idWay_limitValue_idElement;
+
+        //public string limit_name;
+
+        public Branch(string name_)
+        {
+            name = name_;
+            //id_equalse_neyron = new List<int>();
+            id_way = new List<int[]>();
+            limit_value = new List<int[]>();
+            id_element = new List<int[,]>();
+            step_name = new List<string>();
+        }
+
+
+    }
+    public class Neyron_DB
+    {
+        private List<Branch> neyro_branchs;
+
+
+
+        /// <summary>
+        /// переименовываем ветку и возвращаем результат операции
+        /// </summary>
+        /// <param name="new_name">новое имя</param>
+        /// <param name="last_branch_name">старое имя</param>
+        /// <returns></returns>
+        public bool change_name_brench(string new_name, string last_branch_name)
+        {
+            for (int i = 0; i < neyro_branchs.Count; i++)
+            {
+                if (neyro_branchs[i].name == last_branch_name)
+                {
+                    neyro_branchs[i].name = new_name;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// возвращаем ID ветки по имени
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public int search_branchID_to_branch_name(string name)
+        {
+            for (int i = 0; i < neyro_branchs.Count; i++)
+            {
+                if (neyro_branchs[i].name == name)
+                    return i;
+            }
+            return -1;
+        }
+
+
+        /// <summary>
+        /// удаление ветки по индексу (если -1 - удаляем все ветки)
+        /// </summary>
+        /// <param name="ID"></param>
+        public void remove_branch(int ID)
+        {
+            if (ID == -1)
+                neyro_branchs = new List<Branch>();
+            else neyro_branchs.RemoveAt(ID);
+        }
+
+        /// <summary>
+        /// удаление ветки по имени
+        /// </summary>
+        /// <param name="name"></param>
+        public void remove_branch(string name)
+        {
+            for (int i = 0; i < neyro_branchs.Count; i++)
+                if (neyro_branchs[i].name == name)
+                {
+                    remove_branch(i);
+                    return;
+                }
+        }
+
+        /// <summary>
+        /// создать ветку
+        /// </summary>
+        /// <returns></returns>
+        public int add_branch(string name)
+        {
+            neyro_branchs.Add(new Branch(name));
+            return neyro_branchs.Count - 1;
+        }
+
+
+
+
+        List<neyron_<string>> neyrn_s__string;
+        private List<Stek> stek;
+        public List<string> names;
+
+        List<neyron_<int>> neyrn_s__int;
+        List<neyron_<double>> neyrn_s__double;
+        public void re_double_neyrs(neyron_<double> d_n, int i) { neyrn_s__double[i] = d_n; }
+        public void re_int_neyrs(neyron_<int> d_n, int i) { neyrn_s__int[i] = d_n; }
+        public void re_string_neyrs(neyron_<string> d_n, int i) { neyrn_s__string[i] = d_n; }
+        public int __search_index_neyron(neyron_<double> n__)
+        {
+            for (int i = 0; i < neyrn_s__double.Count; i++)
+            {
+                if (n__ == neyrn_s__double[i])
+                    return i;
+            }
+            return -1;
+        }
+        public int __search_index_neyron(neyron_<int> n)
+        {
+            for (int i = 0; i < neyrn_s__int.Count; i++)
+            {
+                if (n == neyrn_s__int[i])
+                    return i;
+            }
+            return -1;
+        }
+        public int __search_index_neyron(neyron_<string> n)
+        {
+            for (int i = 0; i < neyrn_s__string.Count; i++)
+            {
+                if (n == neyrn_s__string[i])
+                    return i;
+            }
+            return -1;
+        }
+        public Neyron_DB()
+        {
+            names = new List<string>();
+            neyrn_s__string = new List<neyron_<string>>();
+            neyrn_s__int = new List<neyron_<int>>();
+            neyrn_s__double = new List<neyron_<double>>();
+            stek = new List<Stek>();
+            neyro_branchs = new List<Branch>();
+        }
+
+        public struct object_s
+        {
+            public object Neyron { get; set; }
+            public char type { get; set; }
+            private int ID;
+            public string name_neyron { get; set; }
+            public int limit { get; set; }
+            public object_s(object neyron, char type_, int ID_, string name_, int limit_)
+            {
+                Neyron = neyron; type = type_; ID = ID_; name_neyron = name_; limit = limit_;
+            }
+            public int get_id() { return ID; }
+        }
+        // нейрон, тип, порядкоый номер в стеке
+        public object_s create_to_name(string name, int limit_)
+        {
+            name = name.Trim();
+            for (int i = 0; i < names.Count; i++)
+            {
+                if (names[i] == name)
+                    if (stek[i].type == 'd')
+                        return new object_s(
+                            neyrn_s__double[stek[i].ID], 'd', i, name, limit_);
+                    else if (stek[i].type == 'i')
+                        return new object_s(
+                            neyrn_s__int[stek[i].ID], 'i', i, name, limit_);
+                    else if (stek[i].type == 's')
+                        return new object_s(
+                            neyrn_s__string[stek[i].ID], 's', i, name, limit_);
+            }
+            return new object_s(null, '\0', 0, null, -1);
+        }
+
+        public void __clear_stek()
+        {
+            stek = new List<Stek>();
+        }
+
+        public int remove_neyron(string name)
+        {
+            for (int i = 0; i < names.Count; i++)
+            {
+                if (names[i] == name)
+                {
+                    if (stek[i].type == 'd')
+                    { neyrn_s__double.RemoveAt(stek[i].ID); stek.RemoveAt(i); }
+                    else if (stek[i].type == 'i')
+                    { neyrn_s__int.RemoveAt(stek[i].ID); stek.RemoveAt(i); }
+                    else if (stek[i].type == 's')
+                    { neyrn_s__string.RemoveAt(stek[i].ID); stek.RemoveAt(i); }
+                    names.RemoveAt(i);
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        public int _add<T>(T neyron, string name)
+        {
+            if (neyron.GetType() == typeof(double))
+            {
+                Stek s = new Stek();
+                s.ID = neyrn_s__double.Count();
+                s.type = 'd';
+                stek.Add(s);
+                neyrn_s__double.Add(new neyron_<double>(3.14));
+            }
+            else if (neyron.GetType() == typeof(int))
+            {
+                Stek s = new Stek();
+                s.ID = neyrn_s__int.Count();
+                s.type = 'i';
+                stek.Add(s);
+                neyrn_s__int.Add(new neyron_<int>(0));
+            }
+            else
+            {
+                Stek s = new Stek();
+                s.ID = neyrn_s__string.Count();
+                s.type = 's';
+                stek.Add(s);
+                neyrn_s__string.Add(new neyron_<string>(""));
+            }
+            names.Add(name);
+            return stek.Count - 1;
+        }
+
+        public int _add<T>(T neyron)
+        {
+            if (neyron.GetType() == typeof(double))
+            {
+                Stek s = new Stek();
+                s.ID = neyrn_s__double.Count();
+                s.type = 'd';
+                stek.Add(s);
+                neyrn_s__double.Add(new neyron_<double>(3.14));
+            }
+            else if (neyron.GetType() == typeof(int))
+            {
+                Stek s = new Stek();
+                s.ID = neyrn_s__int.Count();
+                s.type = 'i';
+                stek.Add(s);
+                neyrn_s__int.Add(new neyron_<int>(0));
+            }
+            else
+            {
+                Stek s = new Stek();
+                s.ID = neyrn_s__string.Count();
+                s.type = 's';
+                stek.Add(s);
+                neyrn_s__string.Add(new neyron_<string>(""));
+            }
+            names.Add((stek.Count - 1).ToString());
+            return stek.Count - 1;
+        }
+        public Stek _get_stek(int index)
+        {
+            return stek[index];
+        }
+        public neyron_<string> _get_string_neyron(int index)
+        {
+            return neyrn_s__string[index];
+        }
+        public neyron_<int> _get_int_neyron(int index)
+        {
+            return neyrn_s__int[index];
+        }
+        public neyron_<double> _get_double_neyron(int index)
+        {
+            return neyrn_s__double[index];
+        }
+    }
+
+
+    class Size_
+    {
+        public List<Control> Controls_ { get; set; }
+        public List<int[]> Controls_procent { get; set; }
+        // position x, position y, width, heihgt
+        public int W_H { get; set; }
+        public int W_W { get; set; }
+
+        public Size_(int Windows_H, int Windows_W)
+        {
+            W_H = Windows_H;
+            W_W = Windows_W;
+            Controls_ = new List<Control>();
+            Controls_procent = new List<int[]>();
+        }
+
+        public void Refresh()
+        {
+
+            double one_percent_position_x = Convert.ToDouble(W_W) / 100;
+            double one_percent_position_y = Convert.ToDouble(W_H) / 100;
+
+            for (int i = 0; i < Controls_.Count; i++)
+            {
+                Controls_[i].Location = new Point(
+                    Convert.ToInt32(Math.Round(one_percent_position_x * Controls_procent[i]
+                    [0])),
+                    Convert.ToInt32(Math.Round(one_percent_position_y * Controls_procent[i]
+                    [1])));
+                Controls_[i].Width = Convert.ToInt32(
+                    Math.Round(one_percent_position_x *
+                    Controls_procent[i][2]));
+                Controls_[i].Height = Convert.ToInt32(
+                    Math.Round(one_percent_position_y *
+                    Controls_procent[i][3]));
+            }
+        }
+
+        /*
+                1 пункт (компьютерный) = 1.333333333333 пиксель (Y)
+                2 пункт (компьютерный) = 2.666666666667 пиксель (Y)
+                3 пункт (компьютерный) = 4 пиксель (Y)
+-------------------------------------------------------------------------------
+                1 пиксель (X) = 0.75 пункт (компьютерный)
+                2 пиксель (X) = 1.5 пункт (компьютерный)
+                3 пиксель (X) = 2.25 пункт (компьютерный)
+                4 пиксель (X) = 3 пункт (компьютерный)
+                5 пиксель (X) = 3.75 пункт (компьютерный)
+                6 пиксель (X) = 4.5 пункт (компьютерный)
+                7 пиксель (X) = 5.25 пункт (компьютерный)
+                8 пиксель (X) = 6 пункт (компьютерный)
+                9 пиксель (X) = 6.75 пункт (компьютерный)
+                10 пиксель (X) = 7.5 пункт (компьютерный)
+------------------------------------------------------------------------------
+
+         */
+        /*
+       public void _text_layer(int index)
+       {
+           if( Controls_[index].Height > Controls_[index].Width)
+           Controls_[index].Font = new Font(FontFamily.GenericSansSerif, Controls_[index].Height-40 * (float)0.75, FontStyle.Regular);
+           else Controls_[index].Font = new Font(FontFamily.GenericSansSerif, Controls_[index].Width-40 * (float)0.75, FontStyle.Regular);
+
+       }
+       */
+
+        public void Add(Control c, int[] procent)
+        {
+            Controls_.Add(c);
+            Controls_procent.Add(procent);
+        }
+        public void Remove_At(int index)
+        {
+            Controls_.RemoveAt(index);
+            Controls_procent.RemoveAt(index);
+        }
+    }
+
 }
 
-// пока не допишешь движок - не трогать
-class WORD
-{
-    public string[] table;
+//// пока не допишешь движок - не трогать
+//class WORD
+//{
+//    public string[] table;
 
-    public List<int[]> sheme_;
-    public last_value last_value__;
-    public List<pattern> patterns;
-    /*
-     * Рандомный набор правил...
-     * 
-     * 1, 3 - привет, Алиса ( 1, 2 - привет ИМЯ )
-     * 3, 18, 24 - Алиса, как твои дела? ( ? -> требует ответа, ! - не обрабатывается )
-     * 3, 4 - Алиса, правильно  Алиса, молодец  Алиса, да
-     * 3, 10 - Алиса, спасибо
-     * 3, 6 - Алиса, умничка
-     * 3, 17, 7 - Алиса, ты милашка )
-    */
-    public int[] matrix;
-    /*
-     * 1 - Приветствие
-     * 2 - Имя хозяина.
-     * 3 - Моё имя.
-     * 4 - одобрение
-     * 5 - отрицание
-     * 6 - хвала 
-     * 7 - качество объекта (милый, добрый и т.п.)
-     * 8 - негатив 
-     * 9 - указание (туда, сюда, там, куда)
-     * 10- благодарность
-     * 11- объект разговора
-     * 12- прощание
-     * 13- свойства объекта (цветовые)
-     * 14- свойства объекта (метрические (длинна ширина))
-     * 15- свойства объекта (длинный, широкий, тяжёлый)
-     * 16- имя объекта разговора
-     * 17- я
-     * 18- ты
-     * 19- мы
-     * 20- вы
-     * 21- он (она оно)
-     * 22- они
-     * 23- состояние
-     * 24- финальный знак
-     */
+//    public List<int[]> sheme_;
+//    public last_value last_value__;
+//    public List<pattern> patterns;
+//    /*
+//     * Рандомный набор правил...
+//     * 
+//     * 1, 3 - привет, Алиса ( 1, 2 - привет ИМЯ )
+//     * 3, 18, 24 - Алиса, как твои дела? ( ? -> требует ответа, ! - не обрабатывается )
+//     * 3, 4 - Алиса, правильно  Алиса, молодец  Алиса, да
+//     * 3, 10 - Алиса, спасибо
+//     * 3, 6 - Алиса, умничка
+//     * 3, 17, 7 - Алиса, ты милашка )
+//    */
+//    public int[] matrix;
+//    /*
+//     * 1 - Приветствие
+//     * 2 - Имя хозяина.
+//     * 3 - Моё имя.
+//     * 4 - одобрение
+//     * 5 - отрицание
+//     * 6 - хвала 
+//     * 7 - качество объекта (милый, добрый и т.п.)
+//     * 8 - негатив 
+//     * 9 - указание (туда, сюда, там, куда)
+//     * 10- благодарность
+//     * 11- объект разговора
+//     * 12- прощание
+//     * 13- свойства объекта (цветовые)
+//     * 14- свойства объекта (метрические (длинна ширина))
+//     * 15- свойства объекта (длинный, широкий, тяжёлый)
+//     * 16- имя объекта разговора
+//     * 17- я
+//     * 18- ты
+//     * 19- мы
+//     * 20- вы
+//     * 21- он (она оно)
+//     * 22- они
+//     * 23- состояние
+//     * 24- финальный знак
+//     */
 
      
 
-    public WORD()
-    {
-        table = new string[0];
-        sheme_ = new List<int[]>();
-        matrix = new int[0];
-        //words = new NeyGorge();
-        last_value__ = new last_value();
-        patterns = new List<pattern>();
-    }
+//    public WORD()
+//    {
+//        table = new string[0];
+//        sheme_ = new List<int[]>();
+//        matrix = new int[0];
+//        //words = new NeyGorge();
+//        last_value__ = new last_value();
+//        patterns = new List<pattern>();
+//    }
 
-    public void SELECT_FROM_FILE(string path)
-    {
-        System.IO.StreamReader str_r = new System.IO.StreamReader(path);
-        string str_ = "";
-        str_ += str_r.ReadToEnd();
-        string[] cache = str_.Split('\n').ToArray();
-        List<int> index__ = new List<int>();
-        for (int i = 0; i < cache.Length; i++)
-        {
-            //cache[i] = cache[i].Trim();
-            cache[i] = cache[i].Trim(new char[] { '\n' });
+//    public void SELECT_FROM_FILE(string path)
+//    {
+//        System.IO.StreamReader str_r = new System.IO.StreamReader(path);
+//        string str_ = "";
+//        str_ += str_r.ReadToEnd();
+//        string[] cache = str_.Split('\n').ToArray();
+//        List<int> index__ = new List<int>();
+//        for (int i = 0; i < cache.Length; i++)
+//        {
+//            //cache[i] = cache[i].Trim();
+//            cache[i] = cache[i].Trim(new char[] { '\n' });
 
-            if (cache[i] == "" || cache[i] == '\0'.ToString()
-                || cache[i] == null || cache[i].Length <= 2)
-                index__.Add(i);
+//            if (cache[i] == "" || cache[i] == '\0'.ToString()
+//                || cache[i] == null || cache[i].Length <= 2)
+//                index__.Add(i);
 
-        }
-        if (cache.Length - index__.Count <= 0)
-            return;
-        matrix =   new int[cache.Length - index__.Count];
-        table = new string[cache.Length - index__.Count];
-        for (int k = 0, j = 0, i = 0; k < cache.Length; k++)
-        {
-            if (k == index__[j])
-                j++;
-            else
-            {
-                //table[i] = cache[k];
-                string[] _t = cache[k].Split(':').ToArray();
+//        }
+//        if (cache.Length - index__.Count <= 0)
+//            return;
+//        matrix =   new int[cache.Length - index__.Count];
+//        table = new string[cache.Length - index__.Count];
+//        for (int k = 0, j = 0, i = 0; k < cache.Length; k++)
+//        {
+//            if (k == index__[j])
+//                j++;
+//            else
+//            {
+//                //table[i] = cache[k];
+//                string[] _t = cache[k].Split(':').ToArray();
 
-                table[i] = _t[0];
-                matrix[i] = Convert.ToInt32(_t[1].Trim());
+//                table[i] = _t[0];
+//                matrix[i] = Convert.ToInt32(_t[1].Trim());
                 
-                i++;
-            }   
-        }
-        str_r.Close();
-    }
+//                i++;
+//            }   
+//        }
+//        str_r.Close();
+//    }
 
-    public struct last_value
-    {
-        public string word;
-        public int[] last_value_;
-        // фраза и предыдущие значения нейронов (слов) в ней                
-    }
-    public struct pattern
-    {
-        public string words;
-        public int[] values;
-        // фраза и значение слов (нейронов) в ней 
-        // для сравнения с другими фразами и выдачи правильного ответа
-    }
+//    public struct last_value
+//    {
+//        public string word;
+//        public int[] last_value_;
+//        // фраза и предыдущие значения нейронов (слов) в ней                
+//    }
+//    public struct pattern
+//    {
+//        public string words;
+//        public int[] values;
+//        // фраза и значение слов (нейронов) в ней 
+//        // для сравнения с другими фразами и выдачи правильного ответа
+//    }
 
-    public int[] ANALIZE(
-        string word, 
-        List<int[]> 
-        neyron_value_sheme, 
-        int limit)
-    {        
-        int error = 0;
-        List<List<int>> error_list = new List<List<int>>();
-        List<int> return_arg = new List<int>();
-
-
-        string[] _word = word.Split(' ').ToArray();
-        for (int i = 0; i < _word.Length; i++)
-        {
-            List<int> array_list = new List<int>();
-            for (int k = 0; k < matrix.Length; k++)
-            {
-                if(table[k].Trim() == _word[i].Trim())
-                {
-                    array_list.Add(matrix[k]);
-                    // считываем все слова из табицы, и 
-                    // добавляем их в ar_list для 
-                    // понимания типа наших слов
-                }
-            }
-            if(array_list.Count != 0)
-                error_list.Add(array_list);
-        }
+//    public int[] ANALIZE(
+//        string word, 
+//        List<int[]> 
+//        neyron_value_sheme, 
+//        int limit)
+//    {        
+//        int error = 0;
+//        List<List<int>> error_list = new List<List<int>>();
+//        List<int> return_arg = new List<int>();
 
 
-        for (int i = 0; i < error_list.Count; i++)
-        {
-            int[] __d = error_list[i].ToArray();
-            if (i >= neyron_value_sheme.Count)
-                break;
-            int[] __a = neyron_value_sheme[i];
-            int j = 0;
-            // вытаскиваем значения (схему хранимую в нейроне) нейрона
-            // и обрабатываем её по элементам других схем
-            if(__d.Length > __a.Length)
-            {
-                for(; j<__a.Length; j++)
-                {
-                    if (__a[j] != __d[j])
-                        error += 1;
-                    if (error > limit)
-                    { error = 0; break; }
-
-                    if (j > __a.Length - 2)
-                        return_arg.Add(i);
-                }
-                j = 0;
-            } else
-            {
-                for(; j < __d.Length; j++)
-                {
-                    if (__a[j] != __d[j])
-                        error += 1;
-                    if (error > limit)
-                    { error = 0; break; }
-
-                    if (j > __d.Length - 2)
-                        return_arg.Add(i);
-                }
-            }
-        }
+//        string[] _word = word.Split(' ').ToArray();
+//        for (int i = 0; i < _word.Length; i++)
+//        {
+//            List<int> array_list = new List<int>();
+//            for (int k = 0; k < matrix.Length; k++)
+//            {
+//                if(table[k].Trim() == _word[i].Trim())
+//                {
+//                    array_list.Add(matrix[k]);
+//                    // считываем все слова из табицы, и 
+//                    // добавляем их в ar_list для 
+//                    // понимания типа наших слов
+//                }
+//            }
+//            if(array_list.Count != 0)
+//                error_list.Add(array_list);
+//        }
 
 
+//        for (int i = 0; i < error_list.Count; i++)
+//        {
+//            int[] __d = error_list[i].ToArray();
+//            if (i >= neyron_value_sheme.Count)
+//                break;
+//            int[] __a = neyron_value_sheme[i];
+//            int j = 0;
+//            // вытаскиваем значения (схему хранимую в нейроне) нейрона
+//            // и обрабатываем её по элементам других схем
+//            if(__d.Length > __a.Length)
+//            {
+//                for(; j<__a.Length; j++)
+//                {
+//                    if (__a[j] != __d[j])
+//                        error += 1;
+//                    if (error > limit)
+//                    { error = 0; break; }
 
-        if(return_arg.ToArray().Length <= 0)
-            return new int[0];
+//                    if (j > __a.Length - 2)
+//                        return_arg.Add(i);
+//                }
+//                j = 0;
+//            } else
+//            {
+//                for(; j < __d.Length; j++)
+//                {
+//                    if (__a[j] != __d[j])
+//                        error += 1;
+//                    if (error > limit)
+//                    { error = 0; break; }
+
+//                    if (j > __d.Length - 2)
+//                        return_arg.Add(i);
+//                }
+//            }
+//        }
+
+
+
+//        if(return_arg.ToArray().Length <= 0)
+//            return new int[0];
         
-        return return_arg.ToArray();
-    }
+//        return return_arg.ToArray();
+//    }
 
-    /// <summary>
-    /// анализируем по паттернам (заранее заготовленным фразам)
-    /// </summary>
-    /// <param name="word">слова (фраза)</param>
-    /// <param name="limit">порог, перешагивая который получаем индекс паттерна, то бишь 1 у нейрона</param>
-    /// <returns>Таблица интексов паттерна</returns>
-    public int[] ANALIZE_TO_PATTERN(string word, int limit)
-    {
-        List<int> return_arg = new List<int>();
-        for (int i = 0; i < patterns.Count; i++)
-        {
-            if (word.Split(' ').Length > patterns[i].values.Length)
-            {
-                string[] words_ = word.ToLower().Split(' ').ToArray();
-                string[] patterns_word = patterns[i].words.Split(' ').ToArray();
-                int OK = 0;
-                for (int k = 0; k < patterns_word.Length; k++)
-                {
-                    if (words_[k] == patterns_word[k])
-                        OK++;
-                }
-                if(OK >= limit)
-                {
-                    return_arg.Add(i);
-                }
-            }
-            else
-            {
-                string[] words_ = word.ToLower().Split(' ').ToArray();
-                string[] patterns_word = patterns[i].words.Split(' ').ToArray();
-                int OK = 0;
-                for (int k = 0; k < words_.Length; k++)
-                {
-                    if (words_[k] == patterns_word[k])
-                        OK++;
-                }
-                if (OK >= limit)
-                {
-                    return_arg.Add(i);
-                }
-            }
-        }
+//    /// <summary>
+//    /// анализируем по паттернам (заранее заготовленным фразам)
+//    /// </summary>
+//    /// <param name="word">слова (фраза)</param>
+//    /// <param name="limit">порог, перешагивая который получаем индекс паттерна, то бишь 1 у нейрона</param>
+//    /// <returns>Таблица интексов паттерна</returns>
+//    public int[] ANALIZE_TO_PATTERN(string word, int limit)
+//    {
+//        List<int> return_arg = new List<int>();
+//        for (int i = 0; i < patterns.Count; i++)
+//        {
+//            if (word.Split(' ').Length > patterns[i].values.Length)
+//            {
+//                string[] words_ = word.ToLower().Split(' ').ToArray();
+//                string[] patterns_word = patterns[i].words.Split(' ').ToArray();
+//                int OK = 0;
+//                for (int k = 0; k < patterns_word.Length; k++)
+//                {
+//                    if (words_[k] == patterns_word[k])
+//                        OK++;
+//                }
+//                if(OK >= limit)
+//                {
+//                    return_arg.Add(i);
+//                }
+//            }
+//            else
+//            {
+//                string[] words_ = word.ToLower().Split(' ').ToArray();
+//                string[] patterns_word = patterns[i].words.Split(' ').ToArray();
+//                int OK = 0;
+//                for (int k = 0; k < words_.Length; k++)
+//                {
+//                    if (words_[k] == patterns_word[k])
+//                        OK++;
+//                }
+//                if (OK >= limit)
+//                {
+//                    return_arg.Add(i);
+//                }
+//            }
+//        }
 
-        if(return_arg.Count == 0)
-            return new int[0];
+//        if(return_arg.Count == 0)
+//            return new int[0];
 
-        return return_arg.ToArray();
-    }
+//        return return_arg.ToArray();
+//    }
 
-    /// <summary>
-    /// анализируем и суммируем все паттерны и если они больше лимита выводим индекс паттерна
-    /// </summary>
-    /// <param name="word_">слово (фраза)</param>
-    /// <param name="limit">максимальная похожесть</param>
-    /// <param name="error_limit">количество неодинаковых слов</param>
-    /// <returns></returns>
-    public int[] ANALYZE_AND_SUMM_TO_PATTERN(string word_, int limit, int error_limit)
-    {
-        int[] indexs = ANALIZE_TO_PATTERN(word_, error_limit);
-        List<int> ret_arg = new List<int>();
+//    /// <summary>
+//    /// анализируем и суммируем все паттерны и если они больше лимита выводим индекс паттерна
+//    /// </summary>
+//    /// <param name="word_">слово (фраза)</param>
+//    /// <param name="limit">максимальная похожесть</param>
+//    /// <param name="error_limit">количество неодинаковых слов</param>
+//    /// <returns></returns>
+//    public int[] ANALYZE_AND_SUMM_TO_PATTERN(string word_, int limit, int error_limit)
+//    {
+//        int[] indexs = ANALIZE_TO_PATTERN(word_, error_limit);
+//        List<int> ret_arg = new List<int>();
 
-        for (int i = 0; i < indexs.Length; i++)
-        {
-            int[] index_value = patterns[indexs[i]].values;
-            int arg_step = 0;
-            for (int k = 0; k < index_value.Length; k++)
-            {
-                arg_step += index_value[k];
-            }
-            if (arg_step >= limit)
-                ret_arg.Add(indexs[i]);
-        }        
-        return ret_arg.ToArray();
-    }
+//        for (int i = 0; i < indexs.Length; i++)
+//        {
+//            int[] index_value = patterns[indexs[i]].values;
+//            int arg_step = 0;
+//            for (int k = 0; k < index_value.Length; k++)
+//            {
+//                arg_step += index_value[k];
+//            }
+//            if (arg_step >= limit)
+//                ret_arg.Add(indexs[i]);
+//        }        
+//        return ret_arg.ToArray();
+//    }
 
-    //public void 
+//    //public void 
 
-    /// <summary>
-    /// ищем объект разговора
-    /// </summary>
-    public string SEARCH_TELL_OBJECT(string word)
-    {
+//    /// <summary>
+//    /// ищем объект разговора
+//    /// </summary>
+//    public string SEARCH_TELL_OBJECT(string word)
+//    {
 
         
-        return null;
-    }
-}
+//        return null;
+//    }
+//}
