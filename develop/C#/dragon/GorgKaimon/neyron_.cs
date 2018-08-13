@@ -317,7 +317,7 @@ namespace GorgKaimon
             switch (action)
             {
                 case "add-": add_neyron(arg); break;//добавить
-                case "defer-": neyrons__.Add(search_neyron(arg, Convert.ToInt32(arg.Split(';')[1].Trim()))); break;
+                case "defer-": neyrons__.Add(search_neyron(arg)); break;
                     //отложить
                     // add- d_gorge
                     // add- i_gorge
@@ -646,7 +646,7 @@ namespace GorgKaimon
                                     new Neyron_DB.object_s
                                     (
                                         new neyron_<int>(0),
-                                        'i', -1, "UnsafeIntNeyron", 100
+                                        'i', -1, "UnsafeIntNeyron"
                                     );
 
                                 for (int q = 0; q < merge_neyron_id.Length; q++)
@@ -809,7 +809,7 @@ namespace GorgKaimon
             //read_console_thread();
             neyrons__ = new List<Neyron_DB.object_s>();
             //neyrons__.Add(new Neyron_DB.object_s(null, 'n', 0));
-            __unsafe_neyron_buffer = new Neyron_DB.object_s(new neyron_<double>(0.0), 'd', 0, null, -1);
+            __unsafe_neyron_buffer = new Neyron_DB.object_s(new neyron_<double>(0.0), 'd', 0, null);
             //_unsafe_code("buffer_read(0)");
         }
         /// <summary>
@@ -837,9 +837,9 @@ namespace GorgKaimon
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        private Neyron_DB.object_s search_neyron(string name, int limit__)
+        private Neyron_DB.object_s search_neyron(string name)
         {
-            return DATA_BASE.create_to_name(name, limit__);
+            return DATA_BASE.create_to_name(name);
         }
         /// <summary>
         /// Удаляем нейрон по имени
@@ -900,48 +900,13 @@ namespace GorgKaimon
                 if (!it_s_word)
                     index = Convert.ToInt32(str_s[0]);
 
-                if (objs[index].type == 'd')
-                {
-                    neyron_<double> n = objs[index].Neyron as neyron_<double>;
-                    int index__ = DATA_BASE.__search_index_neyron(n);
-
-                    string[] commands = str_s[1].Split(' ').ToArray();
-                    string limit_ = str_s[1].Split(';')[1].Trim();
-
-                    for (int i = 0; i < commands.Length; i++)
-                    {
-                        if (commands[i] == null || commands[i] == "")
-                            continue;
-                        string[] name_value = commands[i].Split('<').ToArray();
-                        string[] value_ = name_value[1].Split('>').ToArray();                        
-                        // value_[0] -> значение между '<' и '>'
-                        int id = n.__search_for_width_name(name_value[0]);
-                        if (id == -1)
-                        {
-                            n.width.Add(Convert.ToInt32(value_[0]));
-                            n.width_name.Add(name_value[0]);
-                            DATA_BASE.re_double_neyrs(n, index__);
-                            //DATA_BASE._add<double>(0.0, str_s[0]);
-                        } else
-                        {
-                            //DATA_BASE.remove_neyron(str_s[0]);
-                            //int index__ = DATA_BASE._add<double>(0.0, str_s[0]);
-                            n.width[id] = Convert.ToInt32(value_[0].Trim());
-                            DATA_BASE.re_double_neyrs(n, index__);
-                            //DATA_BASE. косяяяяяяк
-                        }
-                    }
-                    int ID = neyrons__[index].get_id();
-                    string s = neyrons__[index].name_neyron;
-                    neyrons__[index] = new Neyron_DB.object_s(
-                        n, 'd', ID, s, Convert.ToInt32(limit_));
-                } else if (objs[index].type == 'i')
+                if (objs[index].type == 'i')
                 {
                     neyron_<int> n = objs[index].Neyron as neyron_<int>;
                     int index__ = DATA_BASE.__search_index_neyron(n);
 
                     string[] commands = str_s[1].Split(' ').ToArray();
-                    string limit_ = str_s[1].Split(';')[1].Trim();
+                    //string limit_ = str_s[1].Split(';')[1].Trim();
 
                     for (int i = 0; i < commands.Length; i++)
                     {
@@ -970,41 +935,7 @@ namespace GorgKaimon
                     int ID = neyrons__[index].get_id();
                     string s = neyrons__[index].name_neyron;
                     neyrons__[index] = new Neyron_DB.object_s(
-                        n, 'i', ID, s, Convert.ToInt32(limit_));
-                } else if (objs[index].type == 's')
-                {
-                    neyron_<string> n = objs[index].Neyron as neyron_<string>;
-                    int index__ = DATA_BASE.__search_index_neyron(n);
-
-                    string[] commands = str_s[1].Split(' ').ToArray();
-                    string limit_ = str_s[1].Split(';')[1].Trim();
-
-                    for (int i = 0; i < commands.Length; i++)
-                    {
-                        string[] name_value = commands[i].Split('<').ToArray();
-                        string[] value_ = name_value[1].Split('>').ToArray();
-                        // value_[0] -> значение между '<' и '>'
-                        int id = n.__search_for_width_name(name_value[0]);
-                        if (id == -1)
-                        {
-                            n.width.Add(Convert.ToInt32(value_[0]));
-                            n.width_name.Add(name_value[0]);
-                            DATA_BASE.re_string_neyrs(n, index__);
-                            //DATA_BASE._add<double>(0.0, str_s[0]);
-                        }
-                        else
-                        {
-                            //DATA_BASE.remove_neyron(str_s[0]);
-                            //int index__ = DATA_BASE._add<double>(0.0, str_s[0]);
-                            n.width[id] = Convert.ToInt32(value_[0].Trim());
-                            DATA_BASE.re_string_neyrs(n, index__);
-                            //DATA_BASE. косяяяяяяк
-                        }
-                    }
-                    int ID = neyrons__[index].get_id();
-                    string s = neyrons__[index].name_neyron;
-                    neyrons__[index] = new Neyron_DB.object_s(
-                        n, 's', ID, s, Convert.ToInt32(limit_));
+                        n, 'i', ID, s);
                 }
                 #endregion
             } else if (check_word(change_command, "->"))
@@ -1141,7 +1072,7 @@ namespace GorgKaimon
                                         else
                                             return;
                                         //DATA_BASE.re_int_neyrs(n1, id_1);
-                                        neyrons__.Insert(id_1, new Neyron_DB.object_s(n1, 'i', neyrons__[id_1].get_id(), neyrons__[id_1].name_neyron, neyrons__[id_1].limit));
+                                        neyrons__.Insert(id_1, new Neyron_DB.object_s(n1, 'i', neyrons__[id_1].get_id(), neyrons__[id_1].name_neyron));
                                         DATA_BASE.re_int_neyrs(n1, neyrons__[id_1].get_id());
                                         neyrons__.RemoveAt(id_1 + 1);
                                     }
@@ -1297,7 +1228,7 @@ namespace GorgKaimon
                                         else
                                             return;
                                         //DATA_BASE.re_int_neyrs(n1, id_1);
-                                        neyrons__.Insert(id_1, new Neyron_DB.object_s(n1, 'i', neyrons__[id_1].get_id(), neyrons__[id_1].name_neyron, neyrons__[id_1].limit));
+                                        neyrons__.Insert(id_1, new Neyron_DB.object_s(n1, 'i', neyrons__[id_1].get_id(), neyrons__[id_1].name_neyron));
                                         DATA_BASE.re_int_neyrs(n1, neyrons__[id_1].get_id());
                                         neyrons__.RemoveAt(id_1 + 1);
                                     }
@@ -1339,7 +1270,13 @@ namespace GorgKaimon
         private List<int[,]> id_element;
 
 
-        public string Start(List<Neyron_DB.object_s> buffer)
+        /// <summary>
+        /// Запуск по ветке
+        /// </summary>
+        /// <param name="buffer">буффер</param>
+        /// <param name="plus_minus">погрешность</param>
+        /// <returns></returns>
+        public string Start(List<Neyron_DB.object_s> buffer, int plus_minus)
         {
             string arg_return = "";
 
@@ -1357,6 +1294,7 @@ namespace GorgKaimon
 
             while (true)
             {
+                
                 step_id = id_way[step_by][0];
                 id_neyron = id_way[step_by][1];
 
@@ -1385,12 +1323,20 @@ namespace GorgKaimon
                     if (k >= limits[i])
                         q++;
                 }
-                if (q >= limits.Length)
-                { obj = buffer[id_neyron]; step_by++; }
+                if ((q + plus_minus) >= limits.Length && step_by < buffer.Count)
+                {
+                    obj = buffer[id_neyron];
+
+                    if((step_by+=1) >= id_way.Count)
+                    {
+                        arg_return += "last true neyron: '" + buffer[step_by].name_neyron + "'";
+                        return arg_return;
+                    }
+                }
                 else
                     break;
             }
-            arg_return += "last ways: '" + buffer[step_by].name_neyron + "'";
+            arg_return += "neyron: '" + buffer[step_by].name_neyron + "' is not true";
             return arg_return;
         }
 
@@ -1657,15 +1603,15 @@ namespace GorgKaimon
             public char type { get; set; }
             private int ID;
             public string name_neyron { get; set; }
-            public int limit { get; set; }
-            public object_s(object neyron, char type_, int ID_, string name_, int limit_)
+            //public int limit { get; set; }
+            public object_s(object neyron, char type_, int ID_, string name_)
             {
-                Neyron = neyron; type = type_; ID = ID_; name_neyron = name_; limit = limit_;
+                Neyron = neyron; type = type_; ID = ID_; name_neyron = name_; 
             }
             public int get_id() { return ID; }
         }
         // нейрон, тип, порядкоый номер в стеке
-        public object_s create_to_name(string name, int limit_)
+        public object_s create_to_name(string name)
         {
             name = name.Trim();
             for (int i = 0; i < names.Count; i++)
@@ -1673,15 +1619,15 @@ namespace GorgKaimon
                 if (names[i] == name)
                     if (stek[i].type == 'd')
                         return new object_s(
-                            neyrn_s__double[stek[i].ID], 'd', i, name, limit_);
+                            neyrn_s__double[stek[i].ID], 'd', i, name);
                     else if (stek[i].type == 'i')
                         return new object_s(
-                            neyrn_s__int[stek[i].ID], 'i', i, name, limit_);
+                            neyrn_s__int[stek[i].ID], 'i', i, name);
                     else if (stek[i].type == 's')
                         return new object_s(
-                            neyrn_s__string[stek[i].ID], 's', i, name, limit_);
+                            neyrn_s__string[stek[i].ID], 's', i, name);
             }
-            return new object_s(null, '\0', 0, null, -1);
+            return new object_s(null, '\0', 0, null);
         }
 
         public void __clear_stek()
