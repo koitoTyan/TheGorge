@@ -9,6 +9,13 @@ using System.Text;
 
 namespace GorgKaimon
 {
+    
+    #region ПОДКЛАССЫ
+
+    /*
+        объедени операции добавления и удаления базы и буфера, оставив 
+        разделение только в _unsafe- коде
+    */
     public delegate int fn();
     public delegate int fn_return_digital(int arg);
     public delegate T[] fn_data<T>(T[] DATA);
@@ -186,10 +193,102 @@ namespace GorgKaimon
 
     public class NeyGorge
     {
-        string console_command;
-        //bool stop_flag_read_console_command = false;
-        //public static Neyron_DB variable_for_thread_starting;
-        //Console cons;
+        private neyron_<int> MAIN_NEYRON;
+
+        public void LEARN_NEYRON(int INDEX_LEARNING_NEYRON)
+        {
+            neyron_<int> learning = neyrons__[INDEX_LEARNING_NEYRON].Neyron as neyron_<int>;
+
+            for(int i = 0; i < learning.width.Count; i++)
+            {
+                #region CODE
+                bool created = false; int k = 0;
+                for (; k < MAIN_NEYRON.width_name.Count; k++)
+                    if (k < learning.width_name.Count &&
+                        MAIN_NEYRON.width_name[k] == learning.width_name[i])
+                            { created = true; break; }
+                if (created)
+                    if ((MAIN_NEYRON.width[k] + 1) == 0)
+                        MAIN_NEYRON.width[k] = 1;
+                    else
+                        MAIN_NEYRON.width[k] += 1;
+                else
+                {
+                    MAIN_NEYRON.width_name.Add(learning.width_name[i]);
+                    MAIN_NEYRON.width.Add(1);
+                }                
+                #endregion
+            }
+        }
+
+        public void LEARN_NEYRON_MINUS(int INDEX_LEARNING_NEYRON)
+        {
+            neyron_<int> learning = neyrons__[INDEX_LEARNING_NEYRON].Neyron as neyron_<int>;
+
+            for (int i = 0; i < learning.width.Count; i++)
+            {
+                #region CODE                
+                bool created = false; int k = 0;
+                for (; k < MAIN_NEYRON.width_name.Count; k++)
+                    if (k < learning.width_name.Count &&
+                        MAIN_NEYRON.width_name[k] == learning.width_name[i])
+                    { created = true; break; }
+                if (created)
+                    if ((MAIN_NEYRON.width[k] - 1) == 0)
+                        MAIN_NEYRON.width[k] = -1;
+                    else
+                        MAIN_NEYRON.width[k] -= 1;
+                //else
+                //{
+                //    MAIN_NEYRON.width_name.Add(learning.width_name[i]);
+                //    MAIN_NEYRON.width.Add(1);
+                //}                
+                #endregion
+            }
+        }
+
+        public void MAIN_NEYRON_CLEAR() { MAIN_NEYRON = new neyron_<int>(1); }
+
+        public void SET_WIDTH_ALL_ZERO(int COUNT, int INDEX)
+        {
+            neyron_<int> n = new neyron_<int>(0);
+            for(int i = 0; i < COUNT; i++)
+            { n.width.Add(0); n.width_name.Add("w"+(i+1).ToString()); }
+            neyrons__[INDEX] = 
+                new Neyron_DB.object_s(
+                    n, neyrons__[INDEX].type, 
+                    neyrons__[INDEX].get_id(), 
+                    neyrons__[INDEX].name_neyron
+                );
+        }
+
+        public int[] GET_LIMIT_FROM_MAIN_NEYRON(int in_sheet_count)
+        {
+            List<int> sums = new List<int>();
+            int sum = 0;
+            int k = 0;
+            for (int i = 0; i < MAIN_NEYRON.width.Count; i++, k++)
+                if (k >= in_sheet_count)
+                { k = 0; sums.Add(sum); }
+                else
+                    sum += MAIN_NEYRON.width[i];
+            
+            return sums.ToArray();
+        }
+
+        public int[,] GET_ID_ELEMENT_TO_LIMIT_VALUE(int[] LIMITS)
+        {
+            int[,] ret_ar = new int[LIMITS.Length, MAIN_NEYRON.width.Count / LIMITS.Length];
+            int q = 0;
+            for (int i = 0; i < LIMITS.Length; i++)
+                for (int k = 0; k < MAIN_NEYRON.width.Count / LIMITS.Length; k++, q++)
+                    if (q < MAIN_NEYRON.width.Count &&
+                        MAIN_NEYRON.width[q] != 0)
+                        ret_ar[i, k] = q;
+
+            return ret_ar;
+        }
+
         bool position_analyzer;
         public Neyron_DB DATA_BASE;
         public int[] OK_NEYRON;// нейроны в буффере, которые проходят по лимитам
@@ -292,6 +391,8 @@ namespace GorgKaimon
 
         public NeyGorge()
         {
+            MAIN_NEYRON = new neyron_<int>(1);
+
             DATA_BASE = new Neyron_DB();            
             neyrons__ = new List<Neyron_DB.object_s>();
             position_analyzer = true;
@@ -316,13 +417,13 @@ namespace GorgKaimon
             
             switch (action)
             {
-                case "add-": add_neyron(arg); break;//добавить
+                case "add-": add_neyron("i_" + arg); act_("defer-", arg); break;//добавить
                 case "defer-": neyrons__.Add(search_neyron(arg)); break;
                     //отложить
                     // add- d_gorge
                     // add- i_gorge
                     // add- str_gorge
-                case "remove-": remove_neyron(arg); break;
+                case "remove-": remove_neyron(arg); act_("buffer-", "remove_" + arg); break;
                 //change_index: w1name<value> w2name<value> ... wNname<value>
                 case "change-": change_neyron(arg, neyrons__);  break;
                 //изменить
@@ -518,9 +619,12 @@ namespace GorgKaimon
                     neyrons__ = new List<Neyron_DB.object_s>();                    
                     break;
                 case "remove":
-                    int i = Convert.ToInt32(so_command[1].Trim());
-                    if (i < neyrons__.Count)
-                        neyrons__.RemoveAt(Convert.ToInt32(so_command[1].Trim()));
+                    int i = -1;
+                    for (int k = 0; k < neyrons__.Count; k++)
+                        if (neyrons__[k].name_neyron == so_command[1])
+                        { i = k; break; }
+                    if (i < neyrons__.Count && i != -1)
+                        neyrons__.RemoveAt(i);
                     break;
                     
                 default:
@@ -1902,5 +2006,7 @@ namespace GorgKaimon
             return neyrn_s__double[index];
         }
     }
+
+    #endregion
 }
 
