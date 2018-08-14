@@ -6,6 +6,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace GorgKaimon
 {
@@ -311,6 +313,7 @@ namespace GorgKaimon
             return ret_ar;
         }
         #region OTHER
+
         bool position_analyzer;
         public Neyron_DB DATA_BASE;
         private List<Branch> branchs;
@@ -413,7 +416,7 @@ namespace GorgKaimon
         // функции языка
 
         public NeyGorge()
-        {
+        {            
             MAIN_NEYRON = new neyron_<int>(1);
             branchs = new List<Branch>();
             DATA_BASE = new Neyron_DB();            
@@ -459,22 +462,49 @@ namespace GorgKaimon
                     {
                         DATA_BASE.names = new List<string>();
                         DATA_BASE.__clear_stek();                       
-                    }
-                    break;
+                    } break;
                 case "test_limit-": OK_NEYRON = test_limit(arg);
                     // test_limit- ID0: LIMIT, ID1: LIMIT, ID2: LIMIT
                     break;
+                case "remove_branch-":
+                    {
+                        arg = arg.Trim();
+                        for (int i = 0; i < branchs.Count; i++)
+                            if (arg == branchs[i].name)
+                            {
+                                try { branchs.RemoveAt(i); }
+                                catch { }
+                                break;
+                            }
+                    } break;
                 case "start-":
                     {
                         arg = arg.Trim();
                         for (int i = 0; i < branchs.Count; i++)
                             if (arg == branchs[i].name)
-                                branchs[i].bStart(neyrons__, 0);
+                            {
+                                try { branchs[i].bStart(neyrons__, 0); }
+                                catch { }
+                                break;
+                            }
 
-                    }
-                    // branch- add- NAME(ID, ID, ID)
-                    // branch- remove-
-                    break;
+                    } break;
+                case "start_thread-":
+                    {
+                        arg = arg.Trim();
+                        for (int i = 0; i < branchs.Count; i++)
+                            if (arg == branchs[i].name)
+                            {
+                                Task.Run(() => 
+                                {
+                                    try { branchs[i].bStart(neyrons__, 0); }
+                                    catch { }
+                                });
+                                break;
+                            }
+                            
+                    } break;
+                    
                 //bufferCommand_arg
                 // clear_
                 // remove_1, remove_0, remove_2, ..., remove_N
@@ -523,6 +553,7 @@ namespace GorgKaimon
                     break;
             }
         }
+                
 
         private void SET_MAIN_FROM_BRANCH(int indx)
         {
@@ -1083,23 +1114,18 @@ namespace GorgKaimon
                 string[] str_s = change_command.Split(':').ToArray();
                 str_s[0] = str_s[0].Trim();
                 int index = -1;
-                bool it_s_word = false;
-                for (int i = 0; i < str_s[0].Length; i++)
+                
+                try
                 {
-                    if (Char.IsDigit(str_s[0][i]) == false)
-                    {
-                        // проверка по имени ; воткнуть булевскую чтоль....
-
-                        // реализованноо=-
-
-                        it_s_word = true;
-                        if ((index = search_index_to_buffer(str_s[0])) == -1)
-                            return;
-                        else break;
-                    }
-                }
-                if (!it_s_word)
                     index = Convert.ToInt32(str_s[0]);
+                }
+                catch
+                {
+                    if ((index = search_index_to_buffer(str_s[0])) == -1)
+                        return;
+                }
+                 
+                
 
                 if (objs[index].type == 'i')
                 {
