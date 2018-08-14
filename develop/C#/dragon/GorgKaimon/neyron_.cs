@@ -195,6 +195,22 @@ namespace GorgKaimon
     {
         private neyron_<int> MAIN_NEYRON;
 
+        public void CREATE_TABLE_BRANCH_FROM_MAIN_NEYRON(string name, int count_sheet, int[] neyrons)
+        {
+            Branch br = new Branch(name);
+
+            int[] limit = GET_LIMIT_FROM_MAIN_NEYRON(count_sheet);
+
+            int[,] element = GET_ID_ELEMENT_TO_LIMIT_VALUE(limit);
+
+            //int id = neyrons__.Count;
+
+            for (int i = 1; i < neyrons.Length; i++)
+                br.Add(i.ToString(), neyrons[i], neyrons[i - 1], limit, element);
+
+            branchs.Add(br);            
+        }
+        
         public void LEARN_NEYRON(int INDEX_LEARNING_NEYRON)
         {
             neyron_<int> learning = neyrons__[INDEX_LEARNING_NEYRON].Neyron as neyron_<int>;
@@ -211,11 +227,14 @@ namespace GorgKaimon
                     if ((MAIN_NEYRON.width[k] + 1) == 0)
                         MAIN_NEYRON.width[k] = 1;
                     else
-                        MAIN_NEYRON.width[k] += 1;
+                        if (learning.width[k] != 0)
+                            MAIN_NEYRON.width[k] += 1;
+                        else
+                            ;
                 else
                 {
                     MAIN_NEYRON.width_name.Add(learning.width_name[i]);
-                    MAIN_NEYRON.width.Add(1);
+                    MAIN_NEYRON.width.Add(0);
                 }                
                 #endregion
             }
@@ -269,10 +288,10 @@ namespace GorgKaimon
             int k = 0;
             for (int i = 0; i < MAIN_NEYRON.width.Count; i++, k++)
                 if (k >= in_sheet_count)
-                { k = 0; sums.Add(sum); }
+                { k = 0; sums.Add(sum); sum = 0; sum += MAIN_NEYRON.width[i]; }
                 else
                     sum += MAIN_NEYRON.width[i];
-            
+            sums.Add(sum);
             return sums.ToArray();
         }
 
@@ -285,12 +304,16 @@ namespace GorgKaimon
                     if (q < MAIN_NEYRON.width.Count &&
                         MAIN_NEYRON.width[q] != 0)
                         ret_ar[i, k] = q;
+                    else if (q < MAIN_NEYRON.width.Count)
+                        ret_ar[i, k] = -1;
+                        
 
             return ret_ar;
         }
-
+        #region OTHER
         bool position_analyzer;
         public Neyron_DB DATA_BASE;
+        private List<Branch> branchs;
         public int[] OK_NEYRON;// нейроны в буффере, которые проходят по лимитам
         List<Neyron_DB.object_s> neyrons__;
         public List<Neyron_DB.object_s> get_buffer() { return neyrons__; }
@@ -392,7 +415,7 @@ namespace GorgKaimon
         public NeyGorge()
         {
             MAIN_NEYRON = new neyron_<int>(1);
-
+            branchs = new List<Branch>();
             DATA_BASE = new Neyron_DB();            
             neyrons__ = new List<Neyron_DB.object_s>();
             position_analyzer = true;
@@ -417,7 +440,8 @@ namespace GorgKaimon
             
             switch (action)
             {
-                case "add-": add_neyron("i_" + arg); act_("defer-", arg); break;//добавить
+                case "add-": neyrons__.Add(new Neyron_DB.object_s(new neyron_<int>(1),
+                    'i', -1, arg)); break;//добавить
                 case "defer-": neyrons__.Add(search_neyron(arg)); break;
                     //отложить
                     // add- d_gorge
@@ -472,7 +496,10 @@ namespace GorgKaimon
                             }
                     } break;
                 case "main_clear-": MAIN_NEYRON_CLEAR(); break;
-                case "branch_from_main-": break;
+                // branch_from_main- 2: { 1, 2, 3, 4,...,N } (либо имена вместо циферок) 
+                case "branch_from_main-":  branch_from_name(arg); break;
+
+
 
                 case "_unsafe-":
                     _unsafe_code(arg);
@@ -480,6 +507,27 @@ namespace GorgKaimon
                 default:
                     break;
             }
+        }
+
+        private void branch_from_name(string arg)
+        {
+            arg = arg.Trim();
+            int sheet_value = Convert.ToInt32(arg.Split(':')[0]);
+
+            string[] IDs = arg.Split(':')[1].Split('{')[1].Split('}')[0].Split(',');
+
+
+            int[] Ids = new int[IDs.Length];
+
+            for (int i = 0; i < Ids.Length; i++)
+            {
+                Ids[i] = Convert.ToInt32(IDs[i]);
+            }
+
+            string str = branchs.Count.ToString();
+
+
+            CREATE_TABLE_BRANCH_FROM_MAIN_NEYRON(str, sheet_value, Ids);
         }
 
         private string branch_control(string arg)
@@ -954,10 +1002,12 @@ namespace GorgKaimon
             if (args[0] == "d")
             {
                 DATA_BASE._add<double>(0.0, args[1]);
-            } else if (args[0] == "str")
+            }
+            else if (args[0] == "str")
             {
                 DATA_BASE._add<string>("", args[1]);
-            } else if (args[0] == "i")
+            }
+            else if (args[0] == "i")
             {
                 DATA_BASE._add<int>(0, args[1]);
             }
@@ -1034,7 +1084,7 @@ namespace GorgKaimon
                 if (objs[index].type == 'i')
                 {
                     neyron_<int> n = objs[index].Neyron as neyron_<int>;
-                    int index__ = DATA_BASE.__search_index_neyron(n);
+                    //int index__ = DATA_BASE.__search_index_neyron(n);
 
                     string[] commands = str_s[1].Split(' ').ToArray();
                     //string limit_ = str_s[1].Split(';')[1].Trim();
@@ -1050,8 +1100,8 @@ namespace GorgKaimon
                         if (id == -1)
                         {
                             n.width.Add(Convert.ToInt32(value_[0]));
-                            n.width_name.Add(name_value[0]);
-                            DATA_BASE.re_int_neyrs(n, index__);
+                            n.width_name.Add(name_value[0]);                            
+                            //DATA_BASE.re_int_neyrs(n, index__);
                             //DATA_BASE._add<double>(0.0, str_s[0]);
                         }
                         else
@@ -1059,7 +1109,7 @@ namespace GorgKaimon
                             //DATA_BASE.remove_neyron(str_s[0]);
                             //int index__ = DATA_BASE._add<double>(0.0, str_s[0]);
                             n.width[id] = Convert.ToInt32(value_[0].Trim());
-                            DATA_BASE.re_int_neyrs(n, index__);
+                            //DATA_BASE.re_int_neyrs(n, index__);
                             //DATA_BASE. косяяяяяяк
                         }
                     }
@@ -1383,6 +1433,8 @@ namespace GorgKaimon
                 return;
             }
         }
+
+        #endregion
     }
     public struct Stek { public int ID; public char type; }
     public class Branch
@@ -1512,13 +1564,7 @@ namespace GorgKaimon
                 step_id = id_way[step_by][0];
                 id_neyron = id_way[step_by][1];
 
-                if (id_neyron == -1 ||
-                    step_id == -1)
-                {
-                    //its_end = true;
-                    break;
-                }
-
+                
                 limits = limit_value[step_id];
                 int[,] elements = id_element[step_id];
 
@@ -1530,14 +1576,16 @@ namespace GorgKaimon
                     k = 0;
                     for (int e = 0; e < elements.Length / limits.Length; e++)
                     {
-                        // + neyrons__.summ                        
+                        // + neyrons__.summ      
+                        if (elements[i, e] == -1)
+                            continue;                  
                         k += n.width[elements[i, e]];
                     }
 
-                    if (k >= limits[i])
+                    if ((k + plus_minus) >= limits[i])
                         q++;
                 }
-                if ((q + plus_minus) >= limits.Length && step_by < buffer.Count)
+                if (q >= limits.Length && step_by < buffer.Count)
                 {
                     obj = buffer[id_neyron];
 
@@ -1551,6 +1599,8 @@ namespace GorgKaimon
 
                     step_by += 1;
                 }
+                else if (step_by + 1 < buffer.Count)
+                { step_by++; continue; }
                 else
                     break;
             }
@@ -1947,7 +1997,7 @@ namespace GorgKaimon
                     if (stek[i].type == 'd')
                     { neyrn_s__double.RemoveAt(stek[i].ID); stek.RemoveAt(i); }
                     else if (stek[i].type == 'i')
-                    { neyrn_s__int.RemoveAt(stek[i].ID); stek.RemoveAt(i); }
+                    { stek.RemoveAt(i); }
                     else if (stek[i].type == 's')
                     { neyrn_s__string.RemoveAt(stek[i].ID); stek.RemoveAt(i); }
                     names.RemoveAt(i);
@@ -2036,4 +2086,3 @@ namespace GorgKaimon
 
     #endregion
 }
-
