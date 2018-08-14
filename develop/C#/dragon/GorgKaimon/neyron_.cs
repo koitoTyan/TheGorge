@@ -464,7 +464,14 @@ namespace GorgKaimon
                 case "test_limit-": OK_NEYRON = test_limit(arg);
                     // test_limit- ID0: LIMIT, ID1: LIMIT, ID2: LIMIT
                     break;
-                case "branch-": branch_control(arg);
+                case "start-":
+                    {
+                        arg = arg.Trim();
+                        for (int i = 0; i < branchs.Count; i++)
+                            if (arg == branchs[i].name)
+                                branchs[i].bStart(neyrons__, 0);
+
+                    }
                     // branch- add- NAME(ID, ID, ID)
                     // branch- remove-
                     break;
@@ -1573,6 +1580,7 @@ namespace GorgKaimon
             {
                 if (step_by >= id_way.Count)
                     break;
+                
 
                 step_id = id_way[step_by][0];
                 id_neyron = id_way[step_by][1];
