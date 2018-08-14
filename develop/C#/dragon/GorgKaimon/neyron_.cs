@@ -498,8 +498,16 @@ namespace GorgKaimon
                 case "main_clear-": MAIN_NEYRON_CLEAR(); break;
                 // branch_from_main- 2: { 1, 2, 3, 4,...,N } (либо имена вместо циферок) 
                 case "branch_from_main-":  branch_from_name(arg); break;
+                case "last_branch_rename-": branchs[branchs.Count - 1].name = arg.Trim(); break;
 
 
+                // main_from_branch- BRANCH_NAME 
+                case "main_from_branch-": {
+                        arg = arg.Trim();
+                        for (int i = 0; i < branchs.Count; i++)
+                            if (branchs[i].name == arg)
+                                SET_MAIN_FROM_BRANCH(i);
+                    } break;
 
                 case "_unsafe-":
                     _unsafe_code(arg);
@@ -507,6 +515,11 @@ namespace GorgKaimon
                 default:
                     break;
             }
+        }
+
+        private void SET_MAIN_FROM_BRANCH(int indx)
+        {
+            
         }
 
         private void branch_from_name(string arg)
@@ -1449,90 +1462,90 @@ namespace GorgKaimon
 
         //private List<int>       id_equalse_neyron;
         private List<int[]> id_way;
-        private List<int[]> limit_value;
-        private List<int[,]> id_element;
+        private int[] limit_value;
+        private int[,] id_element;
 
 
-        /// <summary>
-        /// Запуск по ветке
-        /// </summary>
-        /// <param name="buffer">буффер</param>
-        /// <param name="plus_minus">погрешность</param>
-        /// <returns></returns>
-        public string sStart(List<Neyron_DB.object_s> buffer, int plus_minus)
-        {
-            string arg_return = "";
+        ///// <summary>
+        ///// Запуск по ветке
+        ///// </summary>
+        ///// <param name="buffer">буффер</param>
+        ///// <param name="plus_minus">погрешность</param>
+        ///// <returns></returns>
+        //public string sStart(List<Neyron_DB.object_s> buffer, int plus_minus)
+        //{
+        //    string arg_return = "";
 
-            int step_by = 0;
+        //    int step_by = 0;
 
-            //int this_way = 1;
+        //    //int this_way = 1;
 
-            int step_id = id_way[step_by][0];
-            int id_neyron = id_way[step_by][1];
+        //    int step_id = id_way[step_by][0];
+        //    int id_neyron = id_way[step_by][1];
 
-            int MAX_VALUE_VALUE = 0;
-            int MAX_VALUE_ID = 0;
+        //    int MAX_VALUE_VALUE = 0;
+        //    int MAX_VALUE_ID = 0;
 
-            int[] limits = limit_value[step_id];
+        //    int[] limits = limit_value[step_id];
 
-            Neyron_DB.object_s obj = buffer[id_neyron];
-            neyron_<int> n = obj.Neyron as neyron_<int>;
+        //    Neyron_DB.object_s obj = buffer[id_neyron];
+        //    neyron_<int> n = obj.Neyron as neyron_<int>;
 
-            //bool its_end = false;
+        //    //bool its_end = false;
 
-            while (true)
-            {
-                if (step_by >= id_way.Count)
-                    break;
+        //    while (true)
+        //    {
+        //        if (step_by >= id_way.Count)
+        //            break;
 
-                step_id = id_way[step_by][0];
-                id_neyron = id_way[step_by][1];
+        //        step_id = id_way[step_by][0];
+        //        id_neyron = id_way[step_by][1];
 
-                if (id_neyron == -1 ||
-                    step_id == -1)
-                {
-                    //its_end = true;
-                    break;
-                }
+        //        if (id_neyron == -1 ||
+        //            step_id == -1)
+        //        {
+        //            //its_end = true;
+        //            break;
+        //        }
 
-                limits = limit_value[step_id];
-                int[,] elements = id_element[step_id];
+        //        limits = limit_value[step_id];
+        //        int[,] elements = id_element[step_id];
 
-                int k = 0;
-                int q = 0;
+        //        int k = 0;
+        //        int q = 0;
 
-                for (int i = 0; i < limits.Length; i++)
-                {
-                    k = 0;
-                    for (int e = 0; e < elements.Length / limits.Length; e++)
-                    {
-                        // + neyrons__.summ                        
-                        k += n.width[elements[i, e]];
-                    }
+        //        for (int i = 0; i < limits.Length; i++)
+        //        {
+        //            k = 0;
+        //            for (int e = 0; e < elements.Length / limits.Length; e++)
+        //            {
+        //                // + neyrons__.summ                        
+        //                k += n.width[elements[i, e]];
+        //            }
 
-                    if (k >= limits[i])
-                        q++;
-                }
-                if ((q + plus_minus) >= limits.Length && step_by < buffer.Count)
-                {
-                    obj = buffer[id_neyron];
+        //            if (k >= limits[i])
+        //                q++;
+        //        }
+        //        if ((q + plus_minus) >= limits.Length && step_by < buffer.Count)
+        //        {
+        //            obj = buffer[id_neyron];
 
-                    if((q + plus_minus) > MAX_VALUE_VALUE)
-                    {
-                        MAX_VALUE_VALUE = q;
-                        MAX_VALUE_ID = id_neyron;
-                    }
+        //            if((q + plus_minus) > MAX_VALUE_VALUE)
+        //            {
+        //                MAX_VALUE_VALUE = q;
+        //                MAX_VALUE_ID = id_neyron;
+        //            }
                     
-                    obj = buffer[id_neyron];
+        //            obj = buffer[id_neyron];
 
-                    step_by += 1;                    
-                }
-                else
-                    break;
-            }
-            arg_return += arg_return += "Последний нейрон приближенный по значению: '" + buffer[MAX_VALUE_ID].name_neyron + "' равны " + MAX_VALUE_VALUE.ToString() + " лимита(ов) из " + limits.Length + "ти(х)" + "info: ID- " + MAX_VALUE_ID.ToString();
-            return arg_return;
-        }
+        //            step_by += 1;                    
+        //        }
+        //        else
+        //            break;
+        //    }
+        //    arg_return += arg_return += "Последний нейрон приближенный по значению: '" + buffer[MAX_VALUE_ID].name_neyron + "' равны " + MAX_VALUE_VALUE.ToString() + " лимита(ов) из " + limits.Length + "ти(х)" + "info: ID- " + MAX_VALUE_ID.ToString();
+        //    return arg_return;
+        //}
 
 
         public bool bStart(List<Neyron_DB.object_s> buffer, int plus_minus)
@@ -1549,7 +1562,7 @@ namespace GorgKaimon
             int MAX_VALUE_VALUE = 0;
             int MAX_VALUE_ID = 0;
 
-            int[] limits = limit_value[step_id];
+            int[] limits = limit_value;
 
             Neyron_DB.object_s obj = buffer[id_neyron];
             neyron_<int> n = obj.Neyron as neyron_<int>;
@@ -1565,8 +1578,8 @@ namespace GorgKaimon
                 id_neyron = id_way[step_by][1];
 
                 
-                limits = limit_value[step_id];
-                int[,] elements = id_element[step_id];
+                limits = limit_value;
+                int[,] elements = id_element;
 
                 int k = 0;
                 int q = 0;
@@ -1611,86 +1624,86 @@ namespace GorgKaimon
         }
 
 
-        /// <summary>
-        /// 1 - ID, 2 - VALUE, 3 - result (1-true, 0 - false)
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="plus_minus"></param>
-        /// <returns></returns>
-        public int[] arStart(List<Neyron_DB.object_s> buffer, int plus_minus)
-        {
-            int step_by = 0;
+        ///// <summary>
+        ///// 1 - ID, 2 - VALUE, 3 - result (1-true, 0 - false)
+        ///// </summary>
+        ///// <param name="buffer"></param>
+        ///// <param name="plus_minus"></param>
+        ///// <returns></returns>
+        //public int[] arStart(List<Neyron_DB.object_s> buffer, int plus_minus)
+        //{
+        //    int step_by = 0;
 
-            //int this_way = 1;
+        //    //int this_way = 1;
 
-            int step_id = id_way[step_by][0];
-            int id_neyron = id_way[step_by][1];
+        //    int step_id = id_way[step_by][0];
+        //    int id_neyron = id_way[step_by][1];
 
-            int MAX_VALUE_VALUE = 0;
-            int MAX_VALUE_ID = 0;
+        //    int MAX_VALUE_VALUE = 0;
+        //    int MAX_VALUE_ID = 0;
 
-            int[] limits = limit_value[step_id];
+        //    int[] limits = limit_value[step_id];
 
-            Neyron_DB.object_s obj = buffer[id_neyron];
-            neyron_<int> n = obj.Neyron as neyron_<int>;
+        //    Neyron_DB.object_s obj = buffer[id_neyron];
+        //    neyron_<int> n = obj.Neyron as neyron_<int>;
 
-            //bool its_end = false;
+        //    //bool its_end = false;
 
-            while (true)
-            {
-                if (step_by >= id_way.Count)
-                    break;
+        //    while (true)
+        //    {
+        //        if (step_by >= id_way.Count)
+        //            break;
 
-                step_id = id_way[step_by][0];
-                id_neyron = id_way[step_by][1];
+        //        step_id = id_way[step_by][0];
+        //        id_neyron = id_way[step_by][1];
 
-                if (id_neyron == -1 ||
-                    step_id == -1)
-                {
-                    //its_end = true;
-                    break;
-                }
+        //        if (id_neyron == -1 ||
+        //            step_id == -1)
+        //        {
+        //            //its_end = true;
+        //            break;
+        //        }
 
-                limits = limit_value[step_id];
-                int[,] elements = id_element[step_id];
+        //        limits = limit_value[step_id];
+        //        int[,] elements = id_element[step_id];
 
-                int k = 0;
-                int q = 0;
+        //        int k = 0;
+        //        int q = 0;
 
-                for (int i = 0; i < limits.Length; i++)
-                {
-                    k = 0;
-                    for (int e = 0; e < elements.Length / limits.Length; e++)
-                    {
-                        // + neyrons__.summ                        
-                        k += n.width[elements[i, e]];
-                    }
+        //        for (int i = 0; i < limits.Length; i++)
+        //        {
+        //            k = 0;
+        //            for (int e = 0; e < elements.Length / limits.Length; e++)
+        //            {
+        //                // + neyrons__.summ                        
+        //                k += n.width[elements[i, e]];
+        //            }
 
-                    if (k >= limits[i])
-                        q++;
-                }
-                if ((q + plus_minus) >= limits.Length && step_by < buffer.Count)
-                {
-                    obj = buffer[id_neyron];
+        //            if (k >= limits[i])
+        //                q++;
+        //        }
+        //        if ((q + plus_minus) >= limits.Length && step_by < buffer.Count)
+        //        {
+        //            obj = buffer[id_neyron];
 
-                    if ((q + plus_minus) > MAX_VALUE_VALUE)
-                    {
-                        MAX_VALUE_VALUE = q;
-                        MAX_VALUE_ID = id_neyron;
-                    }
+        //            if ((q + plus_minus) > MAX_VALUE_VALUE)
+        //            {
+        //                MAX_VALUE_VALUE = q;
+        //                MAX_VALUE_ID = id_neyron;
+        //            }
 
-                    obj = buffer[id_neyron];
+        //            obj = buffer[id_neyron];
 
-                    step_by += 1;
-                }
-                else
-                    break;
-            }
-            //arg_return += arg_return += "Последний нейрон приближенный по значению: '" + buffer[MAX_VALUE_ID].name_neyron + "' равны " + MAX_VALUE_VALUE.ToString() + " лимита(ов) из " + limits.Length + "ти(х)" + "info: ID- " + MAX_VALUE_ID.ToString();
-            if ((MAX_VALUE_VALUE + plus_minus) > limits.Length)
-                return new int[] { MAX_VALUE_ID, MAX_VALUE_VALUE, 1};
-            return new int[] { MAX_VALUE_ID, MAX_VALUE_VALUE, 0 };
-        }
+        //            step_by += 1;
+        //        }
+        //        else
+        //            break;
+        //    }
+        //    //arg_return += arg_return += "Последний нейрон приближенный по значению: '" + buffer[MAX_VALUE_ID].name_neyron + "' равны " + MAX_VALUE_VALUE.ToString() + " лимита(ов) из " + limits.Length + "ти(х)" + "info: ID- " + MAX_VALUE_ID.ToString();
+        //    if ((MAX_VALUE_VALUE + plus_minus) > limits.Length)
+        //        return new int[] { MAX_VALUE_ID, MAX_VALUE_VALUE, 1};
+        //    return new int[] { MAX_VALUE_ID, MAX_VALUE_VALUE, 0 };
+        //}
 
         private int get_summ(List<int> width_)
         {
@@ -1702,36 +1715,36 @@ namespace GorgKaimon
             return summ;
         }
 
-        /// <summary>
-        /// Получаем информирующую строку
-        /// </summary>
-        /// <param name="step_id"></param>
-        /// <returns></returns>
-        public string get_information(int step_id)
-        {
-            string arg_ret = "";
-            arg_ret += "'" + step_name[step_id] + "': #" + id_way[step_id].ToString() + " [";
+        ///// <summary>
+        ///// Получаем информирующую строку
+        ///// </summary>
+        ///// <param name="step_id"></param>
+        ///// <returns></returns>
+        //public string get_information(int step_id)
+        //{
+        //    string arg_ret = "";
+        //    arg_ret += "'" + step_name[step_id] + "': #" + id_way[step_id].ToString() + " [";
 
-            for (int q = 0; q < limit_value[step_id].Count(); q++)
-            {
-                for (int i = 0; i < limit_value[step_id].Length; i++)
-                {
-                    arg_ret += " " + i.ToString() + ": {";
-                    for (int k = 0; k < id_element[step_id].Length / limit_value[step_id].Length; k++)
-                    {
-                        if (k == 0)
-                        {
-                            arg_ret += " " + id_element[step_id][i, k].ToString();
-                            continue;
-                        }
-                        arg_ret += ", " + id_element[step_id][i, k].ToString();
-                    }
-                    arg_ret += " }";
-                }
-                arg_ret += "<" + limit_value[step_id][q].ToString() + ">";
-            }
-            return arg_ret;
-        }
+        //    for (int q = 0; q < limit_value[step_id].Count(); q++)
+        //    {
+        //        for (int i = 0; i < limit_value[step_id].Length; i++)
+        //        {
+        //            arg_ret += " " + i.ToString() + ": {";
+        //            for (int k = 0; k < id_element[step_id].Length / limit_value[step_id].Length; k++)
+        //            {
+        //                if (k == 0)
+        //                {
+        //                    arg_ret += " " + id_element[step_id][i, k].ToString();
+        //                    continue;
+        //                }
+        //                arg_ret += ", " + id_element[step_id][i, k].ToString();
+        //            }
+        //            arg_ret += " }";
+        //        }
+        //        arg_ret += "<" + limit_value[step_id][q].ToString() + ">";
+        //    }
+        //    return arg_ret;
+        //}
 
         /// <summary>
         /// получаем имя шага по ID
@@ -1767,8 +1780,8 @@ namespace GorgKaimon
             step_name.Add(step_name_);
             //id_equalse_neyron.Add(eql_neyronID);
             id_way.Add(new int[] { step_id, way_id_ });
-            limit_value.Add(limits_);
-            id_element.Add(neyrons);
+            limit_value = limits_;
+            id_element = neyrons;
         }
 
         /// <summary>
@@ -1802,10 +1815,10 @@ namespace GorgKaimon
         public void RemoveAt(int step_id)
         {
             step_name.RemoveAt(step_id);
-            id_element.RemoveAt(step_id);
+            //id_element.RemoveAt(step_id);
             //id_equalse_neyron.RemoveAt(step_id);
             id_way.RemoveAt(step_id);
-            limit_value.RemoveAt(step_id);
+            //limit_value.RemoveAt(step_id);
         }
 
 
@@ -1818,8 +1831,8 @@ namespace GorgKaimon
             name = name_;
             //id_equalse_neyron = new List<int>();
             id_way = new List<int[]>();
-            limit_value = new List<int[]>();
-            id_element = new List<int[,]>();
+            //limit_value = new List<int[]>();
+            //id_element = new List<int[,]>();
             step_name = new List<string>();
         }
 
