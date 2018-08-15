@@ -479,11 +479,12 @@ namespace GorgKaimon
                     } break;
                 case "start-":
                     {
+                        Console.WriteLine("Подождите..");
                         arg = arg.Trim();
                         for (int i = 0; i < branchs.Count; i++)
                             if (arg == branchs[i].name)
                             {
-                                try { branchs[i].bStart(neyrons__, 0); }
+                                try { branchs[i].getStart(neyrons__, 0); }
                                 catch { }
                                 break;
                             }
@@ -491,13 +492,14 @@ namespace GorgKaimon
                     } break;
                 case "start_thread-":
                     {
+                        Console.WriteLine("Подождите..");
                         arg = arg.Trim();
                         for (int i = 0; i < branchs.Count; i++)
                             if (arg == branchs[i].name)
                             {
                                 Task.Run(() => 
                                 {
-                                    try { branchs[i].bStart(neyrons__, 0); }
+                                    try { branchs[i].getStart(neyrons__, 0); }
                                     catch { }
                                 });
                                 break;
@@ -1655,6 +1657,80 @@ namespace GorgKaimon
             if ((MAX_VALUE_VALUE + plus_minus) > limits.Length)
                 return true;
             return false;
+        }
+
+        public void getStart(List<Neyron_DB.object_s> buffer, int plus_minus)
+        {
+            //string arg_return = "";
+
+            int step_by = 0;
+
+            //int this_way = 1;
+
+            int step_id = id_way[step_by][0];
+            int id_neyron = id_way[step_by][1];
+
+            int MAX_VALUE_VALUE = 0;
+            int MAX_VALUE_ID = 0;
+
+            int[] limits = limit_value;
+
+            Neyron_DB.object_s obj = buffer[id_neyron];
+            neyron_<int> n = obj.Neyron as neyron_<int>;
+
+            //bool its_end = false;
+
+            while (true)
+            {
+                if (step_by >= id_way.Count)
+                    break;
+
+
+                step_id = id_way[step_by][0];
+                id_neyron = id_way[step_by][1];
+
+
+                limits = limit_value;
+                int[,] elements = id_element;
+
+                int k = 0;
+                int q = 0;
+
+                for (int i = 0; i < limits.Length; i++)
+                {
+                    k = 0;
+                    for (int e = 0; e < elements.Length / limits.Length; e++)
+                    {
+                        // + neyrons__.summ      
+                        if (elements[i, e] == -1)
+                            continue;
+                        k += n.width[elements[i, e]];
+                    }
+
+                    if ((k + plus_minus) >= limits[i])
+                        q++;
+                }
+                if (q >= limits.Length && step_by < buffer.Count)
+                {
+                    obj = buffer[id_neyron];
+
+                    if ((q + plus_minus) > MAX_VALUE_VALUE)
+                    {
+                        MAX_VALUE_VALUE = q;
+                        MAX_VALUE_ID = id_neyron;
+                    }
+
+                    obj = buffer[id_neyron];
+
+                    step_by += 1;
+                }
+                else if (step_by + 1 < buffer.Count)
+                { step_by++; continue; }
+                else
+                    break;
+            }
+            //arg_return += arg_return += "Последний нейрон приближенный по значению: '" + buffer[MAX_VALUE_ID].name_neyron + "' равны " + MAX_VALUE_VALUE.ToString() + " лимита(ов) из " + limits.Length + "ти(х)" + "info: ID- " + MAX_VALUE_ID.ToString();
+            Console.WriteLine("Я думаю что это: " + buffer[MAX_VALUE_ID].name_neyron);
         }
 
 
